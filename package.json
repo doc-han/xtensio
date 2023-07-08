@@ -1,0 +1,25 @@
+{
+  "name": "xtensio",
+  "version": "1.0.0",
+  "description": "A browser extension development tool",
+  "main": "index.js",
+  "author": "Farhan Yahaya",
+  "license": "MIT",
+  "bin": {
+    "xtensio": "./bin/xtensio"
+  },
+  "scripts": {
+    "build": "yarn tsc",
+    "exec": "yarn build && ./bin/xtensio"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^2.3.0",
+    "listr": "^0.14.3",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6"
+  }
+}

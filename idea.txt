@@ -1,0 +1,13 @@
+Places to mount:
+1. popup window
+2. content-script
+3. extension pages
+
+Utility functions:
+
+
+CLI
+1. Start a new Project
+2. Create popup
+3. Create page
+4. Create content-script
