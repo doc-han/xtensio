@@ -2,6 +2,7 @@ import * as inquirer from "@inquirer/prompts"
 import { CreateValues, ExtensionOptionsKey } from "./types";
 import { mkdirSync } from "fs";
 import path from "path";
+import generateCommand from "./generate";
 
 export default async function createCommand(cwd: string, value?: CreateValues){
   // TODO 
@@ -14,20 +15,14 @@ export default async function createCommand(cwd: string, value?: CreateValues){
           value: ExtensionOptionsKey.Popup,
         },
         {
-          name: "Content Scripts",
-          value: ExtensionOptionsKey.Contentscript,
-        },
-        {
-          name: "Extension Pages",
-          value: ExtensionOptionsKey.ExtensionPages,
+          name: "Background Script",
+          value: ExtensionOptionsKey.Background,
         },
       ],
   });
-
-  console.log(projectName, options)
-  // Generate folder in the given location
-  // mkdirSync(path.join(cwd, projectName))
-  // Popup: copy popup code there
-  // Contentscript: ask more questions
-  // Extension Pages: ask more questions
+  
+  const projectDir = path.join(cwd, projectName);
+  mkdirSync(projectDir, {recursive: true});
+  if(options.includes(ExtensionOptionsKey.Popup)) generateCommand(projectDir, "popup"); 
+  if(options.includes(ExtensionOptionsKey.Background)) generateCommand(projectDir, "background"); 
 }

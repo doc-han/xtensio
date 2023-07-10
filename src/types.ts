@@ -1,4 +1,4 @@
-export type Commands = "create" | "generate";
+export type Commands = "create" | "generate" | "build";
 
 export enum ExtensionOptionsKey {
   Background,
@@ -8,4 +8,4 @@ export enum ExtensionOptionsKey {
 }
 
 export type CreateValues = string;
-export type GenerateValues = "popup" | "page" | "contentscript";
+export type GenerateValues = "popup" | "page" | "contentscript" | "background";

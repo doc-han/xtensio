@@ -1,13 +1,9 @@
-Places to mount:
-1. popup window
-2. content-script
-3. extension pages
+1. FOLDER STRUCTURE 
+popup - just one entry file 
+background - just one entry
+pages - anything dropped here becomes a page
+contentscripts - file exports default it's inject points.
 
-Utility functions:
-
-
-CLI
-1. Start a new Project
-2. Create popup
-3. Create page
-4. Create content-script
+2. CLI Commands
+create [filename]
+generate [popup|background|page|contentscript]
