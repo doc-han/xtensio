@@ -8,7 +8,7 @@ export default function generateCommand(cwd: string, value: GenerateValues){
     case "popup": 
       // check if popup directory exists before updating.
       const popupPath = path.join(cwd, "./popup/popup.tsx");
-      genFile(popupPath, {content: "// generated - popup.tsx"});
+      genFile(popupPath, {path: path.resolve(__dirname, "./template/popup/popup.tsx.hbs"), variables: {}});
       return;
     case "page":
       return;
@@ -16,7 +16,7 @@ export default function generateCommand(cwd: string, value: GenerateValues){
       return;
     case "background":
       const backgroundPath = path.join(cwd, "./background/index.ts");
-      genFile(backgroundPath, {content: "// generated - background.ts"});
+      genFile(backgroundPath, {path: path.resolve(__dirname, "./template/background/index.ts.hbs"), variables: {}});
       return;
     default:
       throw Error(`Command ${value} was not found!`);

@@ -9,3 +9,5 @@ export enum ExtensionOptionsKey {
 
 export type CreateValues = string;
 export type GenerateValues = "popup" | "page" | "contentscript" | "background";
+
+export interface TemplateVariables {}; // TODO

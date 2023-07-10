@@ -1,12 +1,14 @@
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path"
+import { TemplateVariables } from "./types";
+import Handlebars from "handlebars";
 
 type ContentConfig = {
     content: string;
 }
 type TemplateConfig = {
     path: string,
-    variables: Record<string, any>
+  variables: TemplateVariables 
 }
 
 type Config = ContentConfig | TemplateConfig;
@@ -20,9 +22,10 @@ export function genFile(dest: string, config: Config){
   if("content" in config){
     outputContent = config.content;
   }else {
-    // TODO generate template and write out put to location
-    const genCode = "#generate with handlebar";
-    outputContent = genCode;
+    const rawTemplate = readFileSync(config.path, "utf8").toString();
+    const template = Handlebars.compile(rawTemplate);
+    const generatedContent = template(config.variables);
+    outputContent = generatedContent;
   }
   writeFileSync(dest, outputContent);
 }
