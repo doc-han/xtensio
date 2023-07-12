@@ -1,13 +1,13 @@
-import { getXtensioWebpackConfig } from "./config/webpack.config"
-import webpack from "webpack"
+import { getXtensioWebpackConfig } from "./config/webpack.config";
+import webpack from "webpack";
 
-export default function buildCommand(cwd: string){
-  // TODO supposed to run webpack at the cwd
-  webpack(getXtensioWebpackConfig(cwd), (err, stats)=> {
-    if(err || stats?.hasErrors()){
+export default async function buildCommand(cwd: string) {
+  const webpackConfig = await getXtensioWebpackConfig(cwd);
+  webpack(webpackConfig, (err, stats) => {
+    if (err || stats?.hasErrors()) {
       console.log(err);
-    }else{
+    } else {
       console.log("bundled successfully!");
     }
-  })  
+  });
 }
