@@ -71,7 +71,8 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
       await install(
         {
           typescript: undefined,
-          react: undefined,
+          react: "^18",
+          "react-dom": "^18",
         },
         {
           prefer: "yarn",
@@ -83,7 +84,8 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
       // DEV deps
       await install(
         {
-          "@types/react": undefined,
+          "@types/react": "~18",
+          "@types/react-dom": "~18",
           "@types/chrome": undefined,
         },
         {
