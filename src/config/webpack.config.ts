@@ -22,7 +22,7 @@ function execute(cmd: string){
 }
 
 async function compileManifestTS(mPath: string){
-  await execute(`yarn tsc ${mPath} --outDir ${tmpdir()}`); 
+  await execute(`yarn tsc ${mPath} --outDir ${tmpdir()} --resolveJsonModule --esModuleInterop`); 
   return path.join(tmpdir(), path.basename(mPath).replace(".ts", ".js"));
 }
 
@@ -109,11 +109,8 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
             ...manifestObj,
             ...popupManifest,
             ...backgroudManifest
-          },
+          }
         },
-        pkgJsonProps: [
-          'version'
-        ]
       }),
       new HtmlWebpackPlugin({
         chunks: ["popup"],
