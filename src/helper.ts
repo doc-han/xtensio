@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { TemplateVariables } from "./types";
+import { TemplateVariables } from "../types";
 import Handlebars from "handlebars";
 import ts from "typescript";
 

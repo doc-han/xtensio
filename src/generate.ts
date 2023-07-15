@@ -1,5 +1,4 @@
-import { mkdirSync, writeFileSync } from "fs";
-import { GenerateValues } from "./types";
+import { GenerateValues } from "../types";
 import path from "path";
 import { genFile } from "./helper";
 

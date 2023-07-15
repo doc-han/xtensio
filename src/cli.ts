@@ -1,19 +1,17 @@
-import * as inquirer from "@inquirer/prompts";
 import createCommand from "./create";
 import generateCommand from "./generate";
-import { Commands, CreateValues, GenerateValues } from "./types";
 import buildCommand from "./build";
-import * as fs from "fs";
+import { Commands, CreateValues, GenerateValues } from "../types";
 
 export async function xtensioCLI<T extends Commands>(
-  binaryPath: string, 
-  _cwd: string, 
-  command: T, 
-  value: GenerateValues | CreateValues 
+  binaryPath: string,
+  _cwd: string,
+  command: T,
+  value: GenerateValues | CreateValues
 ) {
   const cwd = process.cwd();
-  switch(command){
-    case "create": 
+  switch (command) {
+    case "create":
       createCommand(cwd, value as CreateValues);
       return;
     case "generate":

@@ -1,11 +1,12 @@
 import * as inquirer from "@inquirer/prompts";
-import { CreateValues, ExtensionOptionsKey } from "./types";
+import { CreateValues, ExtensionOptionsKey } from "../types";
 import { mkdirSync } from "fs";
 import path from "path";
 import generateCommand from "./generate";
 import Listr from "listr";
 import { genFile } from "./helper";
 import { install } from "pkg-install";
+import pkgJson from "../package.json";
 
 export default async function createCommand(cwd: string, value?: CreateValues) {
   const projectName = value
@@ -68,6 +69,11 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
         variables: { "app-name": projectName },
       });
 
+      genFile(path.join(projectDir, "index.d.ts"), {
+        path: path.resolve(__dirname, "./template/index.d.ts.hbs"),
+        variables: { "app-name": projectName },
+      });
+
       await install(
         {
           typescript: undefined,
@@ -87,6 +93,7 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
           "@types/react": "~18",
           "@types/react-dom": "~18",
           "@types/chrome": undefined,
+          [pkgJson.name]: undefined,
         },
         {
           prefer: "yarn",

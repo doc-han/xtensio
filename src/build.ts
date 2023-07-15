@@ -7,7 +7,7 @@ export default async function buildCommand(cwd: string) {
     if (err || stats?.hasErrors()) {
       console.log(err);
     } else {
-      console.log("bundled successfully!");
+      console.log("Bundled successfully!");
     }
   });
 }

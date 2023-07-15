@@ -26,29 +26,7 @@ async function compileManifestTS(mPath: string){
   return path.join(tmpdir(), path.basename(mPath).replace(".ts", ".js"));
 }
 
-const getPopupExt = (popupContent: string) => {
-  const defaultName = findDefaultExportName(popupContent);
-  if(!defaultName) throw new Error("Can't find default export for Popup entry");
-  return `
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-${popupContent}
-
-let rootContainer = document.getElementById("popup");
-if (!rootContainer) {
-  rootContainer = document.createElement("div");
-  rootContainer.id = "popup";
-  document.body.append(rootContainer);
-}
-const root = createRoot(rootContainer);
-root.render(<${defaultName}/>)`
-}
-
 export const getXtensioWebpackConfig = async (cwd: string) => {
-  const xtensioDir = (filename: string) => path.join(cwd, "./.xtensio/");
-  const xtensioTmpdir = (filename: string) => path.join(cwd, "./.xtensio/tmpdir/", filename);
-
   const popup = path.join(cwd, "./popup/popup.tsx"); 
   const isPopup = fileExists(popup);
   const background = path.join(cwd, "./background/index.ts");
@@ -62,15 +40,22 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
   const popupManifest = isPopup ? {action: {default_popup: "popup.html"}} : {};
   const backgroudManifest = isBackground ? {background: {service_worker: "background.js"}} : {};
 
-  // TODO update popup before use in entry. 
-  // inject more code that mounts it to the UI.
-  const popupContent = readFileSync(popup, "utf8");
-  const generatedPopup = await genFile(xtensioTmpdir("popup.tsx"), {content: getPopupExt(popupContent) });
+  const reactMountLoader = path.resolve(__dirname, "../loaders/reactMountLoader.js");
+  const babelLoader = {
+    loader: "babel-loader",
+    options: {
+      presets: [
+        "@babel/preset-env",
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+      ]
+    }
+  }
   return {
     mode: "development",
     devtool: "inline-source-map",
     entry: {
-      ...(isPopup ? { popup: generatedPopup } : {}),
+      ...(isPopup ? { popup } : {}),
       ...(isBackground ? { background } : {}),
       // TODO go through everything in pages folder.
       // get the default export supposed to be a react component
@@ -87,18 +72,26 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
     module: {
       rules: [
         {
+          test: new RegExp(path.basename(popup)),
+          use: [
+            babelLoader,
+            {
+              loader: reactMountLoader,
+            }
+          ] 
+        },
+        {
           test: /\.(js|jsx|ts|tsx)$/,
           exclude: "/node_modules/",
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                "@babel/preset-env", 
-                "@babel/preset-react",
-                "@babel/preset-typescript"
-              ]
-            }
-          }
+          use: babelLoader 
+        },
+        {
+          test: /\.(css|scss|sass)$/,
+          use: [
+            "style-loader",
+            "css-loader",
+            "sass-loader"
+          ]
         }
       ]
     },
