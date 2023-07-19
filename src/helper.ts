@@ -1,8 +1,8 @@
 import fs from "fs";
-import path from "path";
-import { TemplateVariables } from "../types";
 import Handlebars from "handlebars";
+import path from "path";
 import ts from "typescript";
+import { TemplateVariables } from "../types";
 
 type ContentConfig = {
   content: string;
@@ -39,6 +39,10 @@ export function fileExists(filePath: string) {
   } catch (e) {
     return false;
   }
+}
+
+export function directoryExists(dirPath: string) {
+  return fileExists(dirPath);
 }
 
 // TODO optimize this function

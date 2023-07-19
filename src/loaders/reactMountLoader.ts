@@ -1,13 +1,11 @@
-import { findDefaultExportName } from "../helper"
+import { findDefaultExportName } from "../helper";
+import importReactLoader from "./importReactLoader";
 
-export default function injectReactLoader(source: string){
+export default function injectReactLoader(source: string) {
   const defaultName = findDefaultExportName(source);
   return `
-import React from "react";
 import { createRoot } from "react-dom/client";
-
-${source}
-
+${importReactLoader(source)}
 let rootContainer = document.getElementById("popup");
 if (!rootContainer) {
   rootContainer = document.createElement("div");
@@ -15,5 +13,5 @@ if (!rootContainer) {
   document.body.append(rootContainer);
 }
 const root = createRoot(rootContainer);
-root.render(<${defaultName}/>)`
+root.render(<${defaultName}/>)`;
 }

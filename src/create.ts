@@ -93,7 +93,7 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
           "@types/react": "~18",
           "@types/react-dom": "~18",
           "@types/chrome": undefined,
-          [pkgJson.name]: undefined,
+          // [pkgJson.name]: undefined,
         },
         {
           prefer: "yarn",
