@@ -3,13 +3,16 @@ import Handlebars from "handlebars";
 import path from "path";
 import ts from "typescript";
 import { TemplateVariables } from "../types";
+import kebabCase from "lodash/kebabCase";
+import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
 
 type ContentConfig = {
   content: string;
 };
 type TemplateConfig = {
   path: string;
-  variables: TemplateVariables;
+  variables: TemplateVariables | Record<string, string>;
 };
 
 type Config = ContentConfig | TemplateConfig;
@@ -73,3 +76,15 @@ export function findDefaultExportName(sourceCode: string): string | undefined {
 
   return name;
 }
+
+// TODO remove unwanted filename characters
+export const nameHelper = (str: string) => {
+  const kebab = kebabCase(str);
+  const camel = camelCase(kebab);
+  const pascal = upperFirst(camel);
+  return {
+    kebab,
+    camel,
+    pascal,
+  };
+};

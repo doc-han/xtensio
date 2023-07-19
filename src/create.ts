@@ -1,17 +1,21 @@
 import * as inquirer from "@inquirer/prompts";
-import { CreateValues, ExtensionOptionsKey } from "../types";
 import { mkdirSync } from "fs";
-import path from "path";
-import generateCommand from "./generate";
 import Listr from "listr";
-import { genFile } from "./helper";
+import path from "path";
 import { install } from "pkg-install";
-import pkgJson from "../package.json";
+import { CreateValues, ExtensionOptionsKey } from "../types";
+import generateCommand from "./generate";
+import { genFile, nameHelper } from "./helper";
+
+// Contentscript create requires to steal the inquirer focus.
+// This is reason why it's not here yet
 
 export default async function createCommand(cwd: string, value?: CreateValues) {
-  const projectName = value
-    ? value
-    : await inquirer.input({ message: "What's the name of your project?" });
+  const projectName = nameHelper(
+    value
+      ? value
+      : await inquirer.input({ message: "What's the name of your project?" })
+  );
   const options = await inquirer.checkbox({
     message: "Extension options",
     choices: [
@@ -26,7 +30,7 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
     ],
   });
 
-  const projectDir = path.join(cwd, projectName);
+  const projectDir = path.join(cwd, projectName.kebab);
   const tasks = new Listr([
     {
       title: "Generating Project directory",
@@ -52,7 +56,7 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
     task: () =>
       genFile(path.join(projectDir, "manifest.ts"), {
         path: path.resolve(__dirname, "./template/manifest.ts.hbs"),
-        variables: { "app-name": projectName },
+        variables: { "app-name": projectName.kebab },
       }),
   });
 
@@ -61,17 +65,17 @@ export default async function createCommand(cwd: string, value?: CreateValues) {
     task: async () => {
       genFile(path.join(projectDir, "package.json"), {
         path: path.resolve(__dirname, "./template/package.json.hbs"),
-        variables: { "app-name": projectName },
+        variables: { "app-name": projectName.kebab },
       });
 
       genFile(path.join(projectDir, "tsconfig.json"), {
         path: path.resolve(__dirname, "./template/tsconfig.json.hbs"),
-        variables: { "app-name": projectName },
+        variables: {},
       });
 
       genFile(path.join(projectDir, "index.d.ts"), {
         path: path.resolve(__dirname, "./template/index.d.ts.hbs"),
-        variables: { "app-name": projectName },
+        variables: {},
       });
 
       await install(

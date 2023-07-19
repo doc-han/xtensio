@@ -27,7 +27,9 @@
     "html-webpack-plugin": "^5.5.3",
     "jsdom": "^22.1.0",
     "listr": "^0.14.3",
+    "lodash": "^4.17.21",
     "pkg-install": "^1.0.0",
+    "react": "^18.2.0",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@types/listr": "^0.14.4",
+    "@types/lodash": "^4.14.195",
     "@types/node": "^20.4.1",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",

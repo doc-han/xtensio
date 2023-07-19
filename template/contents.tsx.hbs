@@ -1,0 +1,11 @@
+import { ContentConfig } from "@xtensio/cli";
+
+const {{contentName}}: React.FC = () => {
+    return <div>This get's embedded in the sites defined in matches below!</div>
+}
+
+export default {
+    matches: ["*://*.example.com/*"],
+    shadowRoot: true,
+    component: {{contentName}}
+} as ContentConfig

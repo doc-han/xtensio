@@ -2,8 +2,8 @@
 popup - just one entry file 
 background - just one entry
 pages - anything dropped here becomes a page
-contentscripts - file exports default it's inject points.
+contents - file exports default it's inject points.
 
 2. CLI Commands
 create [filename]
-generate [popup|background|page|contentscript]
+generate [popup|background|page|contents]
