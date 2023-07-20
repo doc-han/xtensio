@@ -1,0 +1,14 @@
+{
+  "name": "create-extension-app",
+  "version": "1.0.2",
+  "main": "index.js",
+  "license": "MIT",
+  "bin": "./bin/create-xtensio-app",
+  "scripts": {
+    "build-script": "chmod +x ./build-script && ./build-script",
+    "build": "yarn workspace create-xtensio-app run build && yarn build-script",
+    "clean": "yarn build-script clean",
+    "push": "yarn build && npm publish && yarn clean"
+  },
+  "description": "Create a new extension project pretty quick"
+}
