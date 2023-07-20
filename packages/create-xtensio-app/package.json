@@ -1,6 +1,6 @@
 {
   "name": "create-xtensio-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Create a new extension project pretty quick",
   "main": "./bin/create-xtensio-app",
   "repository": "https://github.com/doc-han/xtensio.git",
@@ -13,22 +13,22 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "yarn tsc && cp -r ./template ./.build",
+    "build": "yarn tsc && cp -r ./_template ./.build",
     "push": "yarn build && npm publish"
   },
   "dependencies": {
     "@inquirer/prompts": "^3.0.0",
     "listr": "^0.14.3",
-    "pkg-install": "^1.0.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "typescript": "^5.1.6",
-    "xtensio": "1.0.0"
+    "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
+    "lodash.upperfirst": "^4.3.1",
+    "pkg-install": "^1.0.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.241",
     "@types/listr": "^0.14.4",
-    "@types/react": "~18",
-    "@types/react-dom": "~18"
+    "@types/lodash.camelcase": "^4.3.7",
+    "@types/lodash.kebabcase": "^4.1.7",
+    "@types/lodash.upperfirst": "^4.3.7"
   }
 }
