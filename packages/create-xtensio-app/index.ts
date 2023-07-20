@@ -48,7 +48,7 @@ export default async function createCommand(cwd: string, value?: string) {
     tasks.add({
       title: "Generating popup files",
       task: () => {
-        const popupPath = path.join(cwd, "./popup/popup.tsx");
+        const popupPath = path.join(projectDir, "./popup/popup.tsx");
         genFile(popupPath, {
           path: path.resolve(__dirname, "./template/popup.tsx.hbs"),
           variables: {},
@@ -60,7 +60,7 @@ export default async function createCommand(cwd: string, value?: string) {
     tasks.add({
       title: "Generating background file",
       task: () => {
-        const backgroundPath = path.join(cwd, "./background/index.ts");
+        const backgroundPath = path.join(projectDir, "./background/index.ts");
         genFile(backgroundPath, {
           path: path.resolve(__dirname, "./template/background.ts.hbs"),
           variables: {},
