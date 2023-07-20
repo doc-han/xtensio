@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+const path = require("path")
+
+// get cwd and value
+const [
+    binaryPath,
+    _cwd,
+    ...projectName
+] = process.argv;
+require("../.build").default(process.cwd(), projectName.join("-"));

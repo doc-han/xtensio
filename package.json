@@ -1,50 +1,14 @@
 {
-  "name": "@xtensio/cli",
-  "version": "1.0.0",
   "description": "A browser extension development tool",
-  "main": "./bin/xtensio",
-  "author": "Farhan Yahaya",
+  "main": "index.js",
+  "repository": "https://github.com/doc-han/xtensio.git",
+  "author": "doc-han <yahyafarhan48@gmail.com>",
   "license": "MIT",
-  "bin": {
-    "xtensio": "./bin/xtensio"
-  },
-  "types": "index.d.ts",
   "scripts": {
-    "build": "yarn tsc && cp -r ./template ./.build/src/",
-    "exec": "yarn build && ./bin/xtensio"
+    "build": "yarn workspaces run build"
   },
-  "dependencies": {
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-react": "^7.22.5",
-    "@babel/preset-typescript": "^7.22.5",
-    "@inquirer/prompts": "^2.3.0",
-    "@types/jsdom": "^21.1.1",
-    "babel-loader": "^9.1.3",
-    "babel-preset-react-app": "^10.0.1",
-    "css-loader": "^6.8.1",
-    "handlebars": "^4.7.7",
-    "html-webpack-plugin": "^5.5.3",
-    "jsdom": "^22.1.0",
-    "listr": "^0.14.3",
-    "lodash": "^4.17.21",
-    "pkg-install": "^1.0.0",
-    "react": "^18.2.0",
-    "sass": "^1.63.6",
-    "sass-loader": "^13.3.2",
-    "style-loader": "^3.3.3",
-    "ts-loader": "^9.4.4",
-    "typescript": "^5.1.6",
-    "webpack-extension-manifest-plugin": "^0.8.0"
-  },
-  "devDependencies": {
-    "@types/listr": "^0.14.4",
-    "@types/lodash": "^4.14.195",
-    "@types/node": "^20.4.1",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "@types/webpack": "^5.28.1",
-    "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4"
-  }
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": true
 }

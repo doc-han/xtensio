@@ -7,7 +7,7 @@ import kebabCase from "lodash/kebabCase";
 import camelCase from "lodash/camelCase";
 import upperFirst from "lodash/upperFirst";
 
-type ContentConfig = {
+type GenContentConfig = {
   content: string;
 };
 type TemplateConfig = {
@@ -15,9 +15,9 @@ type TemplateConfig = {
   variables: TemplateVariables | Record<string, string>;
 };
 
-type Config = ContentConfig | TemplateConfig;
+type Config = GenContentConfig | TemplateConfig;
 
-export function genFile(dest: string, config: ContentConfig): string;
+export function genFile(dest: string, config: GenContentConfig): string;
 export function genFile(dest: string, config: TemplateConfig): string;
 export function genFile(dest: string, config: Config): string {
   const directories = path.dirname(dest);
