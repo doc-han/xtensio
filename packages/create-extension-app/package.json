@@ -1,6 +1,6 @@
 {
   "name": "create-extension-app",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "license": "MIT",
   "bin": {
@@ -12,5 +12,10 @@
     "clean": "yarn build-script clean",
     "push": "yarn build && npm publish && yarn clean"
   },
-  "description": "Create a new extension project pretty quick"
+  "description": "Create a new extension project pretty quick",
+  "files": [
+    ".build",
+    "bin",
+    "tsconfig.json"
+  ]
 }

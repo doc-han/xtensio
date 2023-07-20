@@ -17,7 +17,8 @@ if(command !== "clean"){
     const newPkg = {
         ...thisPkg,
         description: pkg.description,
-        version: pkg.version
+        version: pkg.version,
+        files: pkg.files
     }
     fs.writeFileSync("./package.json", JSON.stringify(newPkg));
 }
