@@ -19,7 +19,7 @@
   "scripts": {
     "build": "yarn tsc && cp -r ./template ./.build/src/",
     "exec": "yarn build && ./bin/xtensio",
-    "publish": "npm publish"
+    "publish": "yarn build && npm publish"
   },
   "dependencies": {
     "@babel/core": "^7.22.8",
