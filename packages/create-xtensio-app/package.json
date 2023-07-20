@@ -13,7 +13,8 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "yarn tsc && cp -r ./template ./.build"
+    "build": "yarn tsc && cp -r ./template ./.build",
+    "publish": "npm publish"
   },
   "dependencies": {
     "@inquirer/prompts": "^3.0.0",

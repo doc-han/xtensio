@@ -5,7 +5,8 @@
   "author": "doc-han <yahyafarhan48@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "yarn workspaces run build"
+    "build": "yarn workspaces run build",
+    "publish-all": "yarn workspaces run publish"
   },
   "workspaces": [
     "packages/*"
