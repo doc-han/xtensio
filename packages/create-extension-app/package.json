@@ -1,9 +1,11 @@
 {
   "name": "create-extension-app",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "license": "MIT",
-  "bin": "./bin/create-xtensio-app",
+  "bin": {
+    "create-extension-app": "./bin/create-xtensio-app"
+  },
   "scripts": {
     "build-script": "chmod +x ./build-script && ./build-script",
     "build": "yarn workspace create-xtensio-app run build && yarn build-script",
