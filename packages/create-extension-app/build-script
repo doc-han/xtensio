@@ -16,9 +16,10 @@ pkg.files.forEach(file=> {
 if(command !== "clean"){
     const newPkg = {
         ...thisPkg,
-        description: pkg.description,
         version: pkg.version,
-        files: pkg.files
+        description: pkg.description,
+        files: pkg.files,
+        dependencies: pkg.dependencies
     }
     fs.writeFileSync("./package.json", JSON.stringify(newPkg));
 }
