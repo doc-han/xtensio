@@ -1,3 +1,4 @@
+import React from "react";
 import { ContentConfig } from "xtensio";
 
 const Google: React.FC = () => {

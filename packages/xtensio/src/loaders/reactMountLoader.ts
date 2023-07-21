@@ -1,17 +1,24 @@
+import { LoaderContext } from "webpack";
 import { findDefaultExportName } from "../helper";
-import importReactLoader from "./importReactLoader";
 
-export default function injectReactLoader(source: string) {
-  const defaultName = findDefaultExportName(source);
-  return `
-import { createRoot } from "react-dom/client";
-${importReactLoader(source)}
-let rootContainer = document.getElementById("popup");
-if (!rootContainer) {
-  rootContainer = document.createElement("div");
-  rootContainer.id = "popup";
-  document.body.append(rootContainer);
+interface Options {
+  appName: string;
 }
-const root = createRoot(rootContainer);
-root.render(<${defaultName}/>)`;
+
+export default function injectReactLoader(
+  this: LoaderContext<Options>,
+  source: string
+) {
+  const defaultName = findDefaultExportName(source);
+  const options = this.getOptions();
+  const appName = options.appName || "xtensio-app";
+  return `
+import { createRoot as __createRoot } from "react-dom/client";
+${source}
+const __appHost = document.createElement("${appName}");
+const __appRoot = document.createElement("div");
+__appHost.append(__appRoot);
+document.body.append(__appHost);
+const __root = __createRoot(__appRoot);
+__root.render(<${defaultName}/>)`;
 }

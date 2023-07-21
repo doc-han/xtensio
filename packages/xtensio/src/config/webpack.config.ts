@@ -45,6 +45,8 @@ function clearTmpDir(cwd: string) {
 }
 
 export const getXtensioWebpackConfig = async (cwd: string) => {
+  const applicationJson = await import(path.join(cwd, "./package.json"));
+  const appName = applicationJson.name as string;
   clearTmpDir(cwd);
   const popup = path.join(cwd, "./popup/popup.tsx");
   const isPopup = fileExists(popup);
@@ -84,6 +86,7 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
 
   const contentsDir = path.join(cwd, "./contents");
   const isContents = directoryExists(contentsDir);
+  // TODO accept on js and siblings - ignore style files and static files
   const contentFiles = isContents
     ? await fs.readdir(path.join(cwd, "./contents"))
     : [];
@@ -92,6 +95,7 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
       const contentLoc = path.join(contentsDir, file);
       const compiled = await compileManifestTS(contentLoc, cwd);
       const codeImport = await import(compiled);
+      // TODO get name of what's in component [function, class]
       const defaultExport = codeImport?.default || codeImport || {};
       const config: ContentConfig = {
         matches: defaultExport.matches,
@@ -106,6 +110,11 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
       };
     })
   );
+
+  const configMap = new Map<string, ContentConfig>();
+  contentFilesAndExt.forEach((op) => {
+    configMap.set(`${op.filename}${op.ext}`, op.config);
+  });
 
   const contentNamesAndPaths = contentFilesAndExt
     .filter((file) => !!file.config.matches?.length)
@@ -151,6 +160,9 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
             babelLoader,
             {
               loader: reactMountLoader,
+              options: {
+                appName,
+              },
             },
           ],
         },
@@ -162,6 +174,10 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
             babelLoader,
             {
               loader: importReactLoader,
+              options: {
+                configMap,
+                appName,
+              },
             },
           ],
         },
@@ -172,7 +188,35 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
         },
         {
           test: /\.(css|scss|sass)$/,
-          use: ["style-loader", "css-loader", "sass-loader"],
+          use: [
+            {
+              loader: "style-loader",
+              options: {
+                injectType: "styleTag",
+                attributes: { appName },
+                insert: function insertAtTop(styleElement: Element) {
+                  //@ts-ignore
+                  const appName = options.attributes.appName || "xtensio-app";
+                  const observer = new MutationObserver(() => {
+                    const mountRoot = document.querySelector(appName);
+                    if (!mountRoot) return;
+                    const shadowRoot = mountRoot.shadowRoot;
+                    if (shadowRoot) shadowRoot.append(styleElement);
+                    else mountRoot.append(styleElement);
+                    observer.disconnect();
+                  });
+                  const observerDOM =
+                    document.querySelector("html") || document.body;
+                  observer.observe(observerDOM, {
+                    childList: true,
+                    subtree: true,
+                  });
+                },
+              },
+            },
+            "css-loader",
+            "sass-loader",
+          ],
         },
       ],
     },
