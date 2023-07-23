@@ -6,6 +6,7 @@ import { TemplateVariables } from "../types";
 import kebabCase from "lodash/kebabCase";
 import camelCase from "lodash/camelCase";
 import upperFirst from "lodash/upperFirst";
+import { render } from "react-dom"
 
 type GenContentConfig = {
   content: string;
@@ -88,3 +89,27 @@ export const nameHelper = (str: string) => {
     pascal,
   };
 };
+
+type Container = Element | Document | DocumentFragment;
+export function mount(
+  component: any,
+  insert: (() => Container) | Container,
+  insertType: "append" | "prepend" | "replace" = "append"
+) {
+  let mountPoint: Container;
+  let mountContainter: Container = document.createElement("div");
+  if (typeof insert === "function") mountPoint = insert();
+  else mountPoint = insert;
+
+  if (!mountPoint) return;
+
+  if (insertType === "append") {
+    mountPoint.append(mountContainter);
+  } else if (insertType === "prepend") {
+    mountPoint.prepend(mountContainter);
+  } else if (insertType === "replace") {
+    const parent = mountPoint.parentElement;
+    if (parent) parent.replaceChild(mountContainter, mountPoint);
+  }
+  render(component, mountContainter);
+}
