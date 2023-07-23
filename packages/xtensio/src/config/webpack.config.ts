@@ -9,6 +9,11 @@ import { ContentConfig } from "../../types";
 import { directoryExists, fileExists } from "../helper";
 import "./environment";
 
+
+// TODO add a loader for the background page. 
+// on install or refresh, check all open tabs using contentConfig and inject corresponding content
+// TODO remove all extension code from tabs when extension is removed.
+
 function execute(cmd: string) {
   return new Promise<void>((resolve, reject) => {
     exec(cmd, {}, (error, stdout, stderr) => {
@@ -86,9 +91,12 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
 
   const contentsDir = path.join(cwd, "./contents");
   const isContents = directoryExists(contentsDir);
-  // TODO accept on js and siblings - ignore style files and static files
+
   const contentFiles = isContents
-    ? await fs.readdir(path.join(cwd, "./contents"))
+    ? (await fs.readdir(path.join(cwd, "./contents"))).filter(f=> {
+      const ext = path.extname(f);
+      return ext === ".ts" || ext === ".tsx" || ext === ".js";
+    })
     : [];
   const contentFilesAndExt = await Promise.all(
     contentFiles.map(async (file) => {
@@ -121,7 +129,6 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
     .map((file) => ({
       [file.filename]: path.join(cwd, `./contents/${file.filename}${file.ext}`),
     }));
-  // TODO based on the ext value and shadowRoot & component value in ContentConfig - put in the right loader RegExp
   const contentsEntry = Object.assign({}, ...contentNamesAndPaths) as Record<
     string,
     string

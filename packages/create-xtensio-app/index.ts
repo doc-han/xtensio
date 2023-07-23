@@ -1,4 +1,3 @@
-import * as inquirer from "@inquirer/prompts";
 import { mkdirSync } from "fs";
 import Listr from "listr";
 import path from "path";
@@ -7,6 +6,12 @@ import fs from "fs/promises";
 import kebabCase from "lodash.kebabcase";
 import camelCase from "lodash.camelcase";
 import upperFirst from "lodash.upperfirst";
+import readline from "readline/promises";
+
+const readlineInstance = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 // TODO remove unwanted filename characters
 export const nameHelper = (str: string) => {
@@ -20,14 +25,11 @@ export const nameHelper = (str: string) => {
   };
 };
 
-// Contentscript create requires to steal the inquirer focus.
-// This is reason why it's not here yet
-
 export default async function createCommand(cwd: string, value?: string) {
   const projectName = nameHelper(
     value
       ? value
-      : await inquirer.input({ message: "What's the name of your project?" })
+      : await readlineInstance.question("What's the name of your project? ")
   );
 
   const projectDir = path.join(cwd, projectName.kebab);

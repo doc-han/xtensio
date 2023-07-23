@@ -77,9 +77,9 @@ export function findDefaultExportName(sourceCode: string): string | undefined {
   return name;
 }
 
-// TODO remove unwanted filename characters
 export const nameHelper = (str: string) => {
-  const kebab = kebabCase(str);
+  const strippedStr = str.replace(/[^a-z0-9\-\_]/g, "");
+  const kebab = kebabCase(strippedStr);
   const camel = camelCase(kebab);
   const pascal = upperFirst(camel);
   return {
