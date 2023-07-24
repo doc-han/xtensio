@@ -5,7 +5,7 @@ import { exec } from "node:child_process";
 import path from "path";
 import webpack from "webpack";
 import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin";
-import { ContentConfig } from "../../types";
+import { ContentConfig } from "../../types/lib";
 import { directoryExists, fileExists } from "../helper";
 import "./environment";
 
@@ -207,9 +207,10 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
                   const observer = new MutationObserver(() => {
                     const mountRoot = document.querySelector(appName);
                     if (!mountRoot) return;
-                    const shadowRoot = mountRoot.shadowRoot;
-                    if (shadowRoot) shadowRoot.append(styleElement);
-                    else mountRoot.append(styleElement);
+                    const shadowRootContainer = mountRoot.querySelector(`[shadow-root=${appName}]`)
+                    const shadowRoot = shadowRootContainer.shadowRoot;
+                    if (shadowRoot) shadowRoot.prepend(styleElement);
+                    else mountRoot.prepend(styleElement);
                     observer.disconnect();
                   });
                   const observerDOM =

@@ -1,5 +1,4 @@
 /// <reference types="./types/global" />
 
-export * from "./types";
-export * from "./.build/types/src/cli";
-export * from "./.build/types/src/helper";
+export * from "./types/lib";
+export * from "./src/lib";

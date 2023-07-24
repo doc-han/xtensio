@@ -1,6 +1,6 @@
 import path from "path";
 import { LoaderContext } from "webpack";
-import { ContentConfig } from "../../types";
+import { ContentConfig } from "../../types/lib";
 
 interface Options {
   configMap: Map<string, ContentConfig>;
@@ -25,10 +25,13 @@ export default function importReactLoader(
       return `
 import { createRoot as __createRoot } from "react-dom/client";
 ${source}
-const __appRoot = document.createElement("div");
 const __appHost = document.createElement("${appName}");
+const __appRoot = document.createElement("div");
+const __appShadowRoot = document.createElement("div");
+__appShadowRoot.setAttribute("shadow-root", "${appName}");
+__appHost.append(__appShadowRoot);
 document.querySelector("html").append(__appHost);
-__appHost.attachShadow({ mode: "open" }).appendChild(__appRoot);
+__appShadowRoot.attachShadow({ mode: "open" }).appendChild(__appRoot);
 const __root = __createRoot(__appRoot);
 __root.render(<${contentConfig.component}/>);
  `;

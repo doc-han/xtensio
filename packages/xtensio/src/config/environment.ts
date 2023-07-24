@@ -7,16 +7,12 @@ import { JSDOM } from "jsdom";
 import React from "react";
 
 // Mock Browser DOM
-const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
+const dom = new JSDOM("<!DOCTYPE html><html><head></head><body></body></html>", {url: "http://localhost/"});
 // @ts-ignore
 global.window = dom.window;
 global.document = dom.window.document;
-
-// Mock Navigator
-// @ts-ignore
-global.navigator = {
-  userAgent: "Chrome something"
-}
+global.navigator = dom.window.navigator;
+global.MutationObserver = dom.window.MutationObserver;
 
 // Add react to the environment
 global.React = React;

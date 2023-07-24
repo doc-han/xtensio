@@ -8,7 +8,7 @@ const Google: React.FC = () => {
 console.log("I'm on the google page. Check the console");
 
 export default {
-    matches: ["*//:*.google.com/*"],
+    matches: ["*://*.google.com/*"],
     shadowRoot: true,
     component: Google
 } as ContentConfig
