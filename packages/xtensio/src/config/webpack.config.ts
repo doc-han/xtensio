@@ -8,7 +8,7 @@ import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin";
 import { ContentConfig } from "../../types/lib";
 import { directoryExists, fileExists } from "../helper";
 import "./environment";
-
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 // TODO add a loader for the background page. 
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -61,7 +61,12 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
 
   const baseManifest = await compileManifestTS(manifest, cwd);
   const importObj = await import(baseManifest);
-  const manifestObj = importObj?.default || importObj;
+  const manifestObj: chrome.runtime.Manifest = {
+    ...(importObj?.default || importObj),
+    web_accessible_resources: [
+      {resources: ["*.css"], matches: ["<all_urls>"]}
+    ]
+  }
 
   const popupManifest = isPopup
     ? { action: { default_popup: "popup.html" } }
@@ -196,37 +201,29 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
         {
           test: /\.(css|scss|sass)$/,
           use: [
+            MiniCssExtractPlugin.loader,
             {
-              loader: "style-loader",
+              loader: "css-loader",
               options: {
-                injectType: "styleTag",
-                attributes: { appName },
-                insert: function insertAtTop(styleElement: Element) {
-                  //@ts-ignore
-                  const appName = options.attributes.appName || "xtensio-app";
-                  const observer = new MutationObserver(() => {
-                    const mountRoot = document.querySelector(appName);
-                    if (!mountRoot) return;
-                    const shadowRootContainer = mountRoot.querySelector(`[shadow-root=${appName}]`)
-                    const shadowRoot = shadowRootContainer.shadowRoot;
-                    if (shadowRoot) shadowRoot.prepend(styleElement);
-                    else mountRoot.prepend(styleElement);
-                    observer.disconnect();
-                  });
-                  const observerDOM =
-                    document.querySelector("html") || document.body;
-                  observer.observe(observerDOM, {
-                    childList: true,
-                    subtree: true,
-                  });
-                },
-              },
+                modules: true
+              }
             },
-            "css-loader",
             "sass-loader",
           ],
         },
       ],
+    },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          styles: {
+            name: "styles",
+            type: "css/mini-extract",
+            chunks: "all",
+            enforce: true,
+          },
+        },
+      },
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".jsx"],
@@ -246,6 +243,9 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
         chunks: ["popup"],
         filename: "popup.html",
       }),
+      new MiniCssExtractPlugin({
+        filename: `${appName}-styles.css`,
+      })
     ],
   } as webpack.Configuration;
 };

@@ -5,6 +5,8 @@
  */
 import { JSDOM } from "jsdom";
 import React from "react";
+// @ts-ignore
+import chrome from "sinon-chrome/extensions";
 
 // Mock Browser DOM
 const dom = new JSDOM("<!DOCTYPE html><html><head></head><body></body></html>", {url: "http://localhost/"});
@@ -16,6 +18,7 @@ global.MutationObserver = dom.window.MutationObserver;
 
 // Add react to the environment
 global.React = React;
+global.chrome = chrome;
 
 // Mock Console object
 global.console = {

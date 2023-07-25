@@ -25,13 +25,37 @@ export default function importReactLoader(
       return `
 import { createRoot as __createRoot } from "react-dom/client";
 ${source}
+// Extension styles here!
+const getLinkTag = () => {
+  const __styleLink = chrome.runtime.getURL("${appName}-styles.css");
+  const __linkTag = document.createElement("link");
+  __linkTag.rel = "stylesheet";
+  __linkTag.href = __styleLink;
+  return __linkTag;
+}
+
+const mObserver = new MutationObserver((mutationsList, observer)=> {
+  for (const mutation of mutationsList) {
+    if (mutation.type === 'childList') {
+      mutation.addedNodes.forEach((node) => {
+        if (/xtensio-mount/i.test(node.nodeName)) {
+          const shadowEl = node.querySelector("[shadow-root]");
+          if(!shadowEl) return;
+          shadowEl.shadowRoot.prepend(getLinkTag());
+        }
+      });
+    }
+  }
+});
+mObserver.observe(document.querySelector("html") || document.body, {childList: true, subtree: true });
+
 const __appHost = document.createElement("${appName}");
 const __appRoot = document.createElement("div");
 const __appShadowRoot = document.createElement("div");
 __appShadowRoot.setAttribute("shadow-root", "${appName}");
 __appHost.append(__appShadowRoot);
 document.querySelector("html").append(__appHost);
-__appShadowRoot.attachShadow({ mode: "open" }).appendChild(__appRoot);
+__appShadowRoot.attachShadow({ mode: "open" }).append(getLinkTag(), __appRoot);
 const __root = __createRoot(__appRoot);
 __root.render(<${contentConfig.component}/>);
  `;

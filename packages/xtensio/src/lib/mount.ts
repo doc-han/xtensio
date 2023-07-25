@@ -19,6 +19,7 @@ export async function mount(
   const { insertType } = config;
   let mountContainer: Element = document.createElement("xtensio-mount");
   let mountShadowContainer = document.createElement("div");
+  mountShadowContainer.setAttribute("shadow-root", "");
   let mountShadowRoot = mountShadowContainer.attachShadow({mode: "open"});
   let mountRoot = document.createElement("div");
 
