@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { domSelector } from "./domSelector";
 
 interface MountConfig {
@@ -38,5 +38,6 @@ export async function mount(
   } else if(insertType === "before"){
     mountPoint.before(mountContainer);
   }
-  render(component, mountRoot);
+  const root = createRoot(mountRoot);
+  root.render(component);
 }
