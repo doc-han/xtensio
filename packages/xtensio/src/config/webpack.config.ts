@@ -1,12 +1,11 @@
 import { rmSync } from "fs";
 import fs from "fs/promises";
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import { exec } from "node:child_process";
 import path from "path";
 import webpack from "webpack";
 import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin";
 import { ContentConfig } from "../../types/lib";
-import { directoryExists, fileExists } from "../helper";
+import { directoryExists, execute, fileExists } from "../helper";
 import "./environment";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
@@ -14,14 +13,6 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
 // TODO remove all extension code from tabs when extension is removed.
 
-function execute(cmd: string) {
-  return new Promise<void>((resolve, reject) => {
-    exec(cmd, {}, (error, stdout, stderr) => {
-      if (error) reject(error);
-      resolve();
-    });
-  });
-}
 
 const getTmpDir = (cwd: string) => {
   return path.join(cwd, "./.xtensio/tmp");

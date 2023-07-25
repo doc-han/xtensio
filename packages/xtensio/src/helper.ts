@@ -6,6 +6,7 @@ import { TemplateVariables } from "../types";
 import kebabCase from "lodash/kebabCase";
 import camelCase from "lodash/camelCase";
 import upperFirst from "lodash/upperFirst";
+import { exec } from "node:child_process";
 
 type GenContentConfig = {
   content: string;
@@ -89,3 +90,11 @@ export const nameHelper = (str: string) => {
   };
 };
 
+export function execute(cmd: string) {
+  return new Promise<void>((resolve, reject) => {
+    exec(cmd, {}, (error, stdout, stderr) => {
+      if (error) reject(error);
+      resolve();
+    });
+  });
+}

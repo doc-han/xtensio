@@ -3,6 +3,8 @@ import generateCommand from "./generate";
 import buildCommand from "./build";
 import { Commands, CreateValues, GenerateValues } from "../types";
 import devCommand from "./dev";
+import path from "path";
+import { execute } from "./helper";
 
 export async function xtensioCLI<T extends Commands>(
   binaryPath: string,
@@ -19,10 +21,14 @@ export async function xtensioCLI<T extends Commands>(
       generateCommand(cwd, value as GenerateValues);
       return;
     case "build":
-      buildCommand(cwd);
+      await buildCommand(cwd);
+      const buildPath = path.join(cwd, "./.xtensio/build");
+      execute(`yarn web-ext build --source-dir ${buildPath} -o --artifacts-dir=zips`)
       return;
     case "dev": 
-      devCommand(cwd);
+      await devCommand(cwd);
+      const devPath = path.join(cwd, "./.xtensio/dev");
+      execute(`yarn web-ext run --source-dir ${devPath} --target=chromium`)
       return; 
     default:
       throw Error(`Command ${command} was not found!`);
