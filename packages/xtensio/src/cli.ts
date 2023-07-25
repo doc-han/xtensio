@@ -2,6 +2,7 @@ import createCommand from "./create";
 import generateCommand from "./generate";
 import buildCommand from "./build";
 import { Commands, CreateValues, GenerateValues } from "../types";
+import devCommand from "./dev";
 
 export async function xtensioCLI<T extends Commands>(
   binaryPath: string,
@@ -20,6 +21,9 @@ export async function xtensioCLI<T extends Commands>(
     case "build":
       buildCommand(cwd);
       return;
+    case "dev": 
+      devCommand(cwd);
+      return; 
     default:
       throw Error(`Command ${command} was not found!`);
   }

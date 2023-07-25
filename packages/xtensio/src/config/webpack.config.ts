@@ -49,7 +49,7 @@ function clearTmpDir(cwd: string) {
     rmSync(getTmpDir(cwd), { force: true, recursive: true });
 }
 
-export const getXtensioWebpackConfig = async (cwd: string) => {
+export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) => {
   const applicationJson = await import(path.join(cwd, "./package.json"));
   const appName = applicationJson.name as string;
   clearTmpDir(cwd);
@@ -148,8 +148,9 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
 
   clearTmpDir(cwd);
   return {
-    mode: "development",
-    devtool: "inline-source-map",
+    mode: dev ? "development" : "production",
+    devtool: dev ? "inline-source-map" : undefined,
+    watch: dev ? true : false,
     entry: {
       ...(isPopup ? { popup } : {}),
       ...(isBackground ? { background } : {}),
@@ -160,7 +161,7 @@ export const getXtensioWebpackConfig = async (cwd: string) => {
       ...contentsEntry,
     },
     output: {
-      path: path.join(cwd, "./.xtensio/dist"),
+      path: path.join(cwd, `./.xtensio/${dev ? "dev" : "build"}`),
       filename: "[name].js",
     },
     module: {

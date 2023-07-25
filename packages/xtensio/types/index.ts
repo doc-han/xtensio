@@ -1,4 +1,4 @@
-export type Commands = "create" | "generate" | "build";
+export type Commands = "create" | "generate" | "build" | "dev";
 
 export enum ExtensionOptionsKey {
   Background,
