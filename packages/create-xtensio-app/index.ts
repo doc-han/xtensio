@@ -7,6 +7,7 @@ import kebabCase from "lodash.kebabcase";
 import camelCase from "lodash.camelcase";
 import upperFirst from "lodash.upperfirst";
 import readline from "readline/promises";
+import { exec } from "node:child_process";
 
 const readlineInstance = readline.createInterface({
   input: process.stdin,
@@ -94,6 +95,16 @@ export default async function createCommand(cwd: string, value?: string) {
       );
     },
   });
+
+  tasks.add({
+    title: "Initializing git",
+    task: ()=>  new Promise<void>((resolve, reject)=> {
+      exec("git init", { cwd: projectDir }, (error, stdout, stderr) => {
+        if (error) reject(error);
+        resolve();
+      });
+    }) 
+  })
 
   tasks.run().catch((err) => {
     console.error(err);
