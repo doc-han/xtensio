@@ -1,7 +1,6 @@
-import createCommand from "./create";
 import generateCommand from "./generate";
 import buildCommand from "./build";
-import { Commands, CreateValues, GenerateValues } from "../types";
+import { Commands, GenerateValues } from "../types";
 import devCommand from "./dev";
 import path from "path";
 import { execute } from "./helper";
@@ -10,15 +9,12 @@ export async function xtensioCLI<T extends Commands>(
   binaryPath: string,
   _cwd: string,
   command: T,
-  value: GenerateValues | CreateValues
+  value: GenerateValues 
 ) {
   const cwd = process.cwd();
   switch (command) {
-    case "create":
-      createCommand(cwd, value as CreateValues);
-      return;
     case "generate":
-      generateCommand(cwd, value as GenerateValues);
+      generateCommand(cwd, value);
       return;
     case "build":
       await buildCommand(cwd);

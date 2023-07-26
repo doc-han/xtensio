@@ -1,4 +1,4 @@
-export type Commands = "create" | "generate" | "build" | "dev";
+export type Commands = "generate" | "build" | "dev";
 
 export enum ExtensionOptionsKey {
   Background,
@@ -7,7 +7,6 @@ export enum ExtensionOptionsKey {
   ExtensionPages,
 }
 
-export type CreateValues = string;
 export type GenerateValues = "popup" | "page" | "contents" | "background";
 
 export interface TemplateVariables {
