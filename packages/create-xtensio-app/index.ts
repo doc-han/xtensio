@@ -20,6 +20,7 @@ export const nameHelper = (str: string) => {
   const camel = camelCase(kebab);
   const pascal = upperFirst(camel);
   return {
+    name: str,
     kebab,
     camel,
     pascal,
@@ -52,10 +53,11 @@ export default async function createCommand(cwd: string, value?: string) {
         const filePath = path.join(templatePath, file);
         const destPath = path.join(projectDir, file);
         if (file === "package.json" || file === "manifest.ts") {
+          const isManifest = file === "manifest.ts";
           const fileContent = await fs.readFile(filePath, "utf-8");
           await fs.writeFile(
             path.join(projectDir, file),
-            fileContent.replace("{{app-name}}", projectName.kebab),
+            fileContent.replace("{{app-name}}", isManifest ? projectName.name : projectName.kebab),
             "utf-8"
           );
         } else await fs.cp(filePath, destPath, { recursive: true });
