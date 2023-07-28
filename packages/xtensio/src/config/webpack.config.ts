@@ -55,7 +55,8 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
   const manifestObj: chrome.runtime.Manifest = {
     ...(importObj?.default || importObj),
     web_accessible_resources: [
-      {resources: ["*.css"], matches: ["<all_urls>"]}
+      // TODO let the matches here match what is coming from contentscripts
+      {resources: ["*"], matches: ["<all_urls>"]}
     ]
   }
 
@@ -157,6 +158,16 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
     },
     module: {
       rules: [
+        {
+          test: /\.(png|jpe?g|gif)$/i,
+          use: [{
+            loader: "file-loader",
+            options: {
+              name: "[contenthash].[ext]",
+              publicPath: "/"
+            }
+          }]
+        },
         {
           test: new RegExp(path.basename(popup)),
           exclude: "/node_modules/",
