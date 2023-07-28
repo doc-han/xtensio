@@ -33,6 +33,6 @@ const originalRequire = require("module").prototype.require;
 require("module").prototype.require = function (id: string) {
   // Mock css imports
   if (/\.(css|scss|sass)$/.test(id)) return {};
-  else if(/\.(png|jpe?g|gif)$/i.test(id)) return "";
+  else if(/\.(png|jpe?g|gif|svg|pdf)$/i.test(id)) return "";
   return originalRequire.call(this, id);
 };

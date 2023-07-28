@@ -159,7 +159,7 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
     module: {
       rules: [
         {
-          test: /\.(png|jpe?g|gif)$/i,
+          test: /\.(png|jpe?g|gif|svg|pdf)$/i,
           use: [{
             loader: "file-loader",
             options: {
