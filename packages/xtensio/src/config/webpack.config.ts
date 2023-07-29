@@ -205,15 +205,10 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
           test: /\.(css|scss|sass)$/,
           use: [
             MiniCssExtractPlugin.loader,
-            {
-              loader: "css-loader",
-              options: {
-                modules: true
-              }
-            },
+            "css-loader",
             "sass-loader",
           ],
-        },
+       },
       ],
     },
     optimization: {
