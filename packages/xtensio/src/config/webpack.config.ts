@@ -1,4 +1,4 @@
-import { rmSync } from "fs";
+import { readFileSync, rmSync } from "fs";
 import fs from "fs/promises";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import path from "path";
@@ -8,14 +8,35 @@ import { ContentConfig } from "../../types/lib";
 import { directoryExists, execute, fileExists } from "../helper";
 import "./environment";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import dotenv from "dotenv";
 
-// TODO add a loader for the background page. 
+// TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
 // TODO remove all extension code from tabs when extension is removed.
 
-
 const getTmpDir = (cwd: string) => {
   return path.join(cwd, "./.xtensio/tmp");
+};
+
+const getEnvObject = (cwd: string, dev: boolean) => {
+  const envFiles = [
+    ".env",
+    ...(dev
+      ? [".dev.env", ".development.env"]
+      : [".prod.env", ".production.env"]),
+  ];
+  const envObj = envFiles
+    .map((file) => {
+      const envPath = path.join(cwd, file);
+      if (!fileExists(envPath)) return {};
+      return dotenv.parse(readFileSync(envPath, "utf-8"));
+    })
+    .reduce((a, b) => ({ ...a, ...b }));
+
+  return Object.keys(envObj).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(envObj[next]);
+    return prev;
+  }, {} as Record<string, string>);
 };
 
 async function compileManifestTS(mPath: string, cwd: string) {
@@ -40,7 +61,11 @@ function clearTmpDir(cwd: string) {
     rmSync(getTmpDir(cwd), { force: true, recursive: true });
 }
 
-export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) => {
+export const getXtensioWebpackConfig = async (
+  cwd: string,
+  dev: boolean = true
+) => {
+  const envObject = getEnvObject(cwd, dev);
   const applicationJson = await import(path.join(cwd, "./package.json"));
   const appName = applicationJson.name as string;
   clearTmpDir(cwd);
@@ -56,9 +81,9 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
     ...(importObj?.default || importObj),
     web_accessible_resources: [
       // TODO let the matches here match what is coming from contentscripts
-      {resources: ["*"], matches: ["<all_urls>"]}
-    ]
-  }
+      { resources: ["*"], matches: ["<all_urls>"] },
+    ],
+  };
 
   const popupManifest = isPopup
     ? { action: { default_popup: "popup.html" } }
@@ -90,10 +115,10 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
   const isContents = directoryExists(contentsDir);
 
   const contentFiles = isContents
-    ? (await fs.readdir(path.join(cwd, "./contents"))).filter(f=> {
-      const ext = path.extname(f);
-      return ext === ".ts" || ext === ".tsx" || ext === ".js";
-    })
+    ? (await fs.readdir(path.join(cwd, "./contents"))).filter((f) => {
+        const ext = path.extname(f);
+        return ext === ".ts" || ext === ".tsx" || ext === ".js";
+      })
     : [];
   const contentFilesAndExt = await Promise.all(
     contentFiles.map(async (file) => {
@@ -139,8 +164,9 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
     }));
 
   clearTmpDir(cwd);
+  const webpackMode = dev ? "development" : "production";
   return {
-    mode: dev ? "development" : "production",
+    mode: webpackMode,
     devtool: dev ? "inline-source-map" : undefined,
     watch: dev ? true : false,
     entry: {
@@ -160,13 +186,15 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
       rules: [
         {
           test: /\.(png|jpe?g|gif|svg|pdf)$/i,
-          use: [{
-            loader: "file-loader",
-            options: {
-              name: "[contenthash].[ext]",
-              publicPath: "/"
-            }
-          }]
+          use: [
+            {
+              loader: "file-loader",
+              options: {
+                name: "[contenthash].[ext]",
+                publicPath: "/",
+              },
+            },
+          ],
         },
         {
           test: new RegExp(path.basename(popup)),
@@ -203,12 +231,8 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
         },
         {
           test: /\.(css|scss|sass)$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            "css-loader",
-            "sass-loader",
-          ],
-       },
+          use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+        },
       ],
     },
     optimization: {
@@ -227,6 +251,11 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
       extensions: [".ts", ".tsx", ".js", ".jsx"],
     },
     plugins: [
+      new webpack.DefinePlugin({
+        "process.env.ENV": JSON.stringify(webpackMode),
+        "process.env.NODE_ENV": JSON.stringify(webpackMode),
+        ...envObject,
+      }),
       new WebpackExtensionManifestPlugin({
         config: {
           base: {
@@ -243,7 +272,7 @@ export const getXtensioWebpackConfig = async (cwd: string, dev: boolean = true) 
       }),
       new MiniCssExtractPlugin({
         filename: `${appName}-styles.css`,
-      })
+      }),
     ],
   } as webpack.Configuration;
 };
