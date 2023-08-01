@@ -5,6 +5,7 @@
   "author": "doc-han <yahyafarhan48@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "build": "yarn workspaces run build",
     "push": "yarn workspaces run push",
     "lint": "yarn workspaces run lint",
@@ -13,5 +14,8 @@
   "workspaces": [
     "packages/*"
   ],
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "husky": "^8.0.3"
+  }
 }
