@@ -14,7 +14,7 @@ export default function importReactLoader(
   const resourcePath = this.resourcePath;
   const resourceFilename = path.basename(resourcePath);
   const options = this.getOptions();
-  const appName = options.appName || "xtensio-app";
+  const appName = options.appName;
   if (!(options.configMap instanceof Map))
     throw new Error("importReactLoader requires options.contents to be a map");
 
@@ -34,12 +34,12 @@ const getLinkTag = () => {
   return __linkTag;
 }
 
-const mObserver = new MutationObserver((mutationsList, observer)=> {
+const __mObserver = new MutationObserver((mutationsList, observer)=> {
   for (const mutation of mutationsList) {
     if (mutation.type === 'childList') {
       mutation.addedNodes.forEach((node) => {
-        if (/xtensio-mount/i.test(node.nodeName)) {
-          const shadowEl = node.querySelector("[shadow-root]");
+        if (/(${appName}-mount)/i.test(node.nodeName)) {
+          const shadowEl = node.querySelector("[shadow-root='${appName}-mount']");
           if(!shadowEl) return;
           shadowEl.shadowRoot.prepend(getLinkTag());
         }
@@ -47,7 +47,7 @@ const mObserver = new MutationObserver((mutationsList, observer)=> {
     }
   }
 });
-mObserver.observe(document.querySelector("html") || document.body, {childList: true, subtree: true });
+__mObserver.observe(document.querySelector("html") || document.body, {childList: true, subtree: true });
 
 const __appHost = document.createElement("${appName}");
 const __appRoot = document.createElement("div");

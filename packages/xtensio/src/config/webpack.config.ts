@@ -245,6 +245,7 @@ export const getXtensioWebpackConfig = async (
     },
     plugins: [
       new webpack.DefinePlugin({
+        "process.env.XTENSIO_APPNAME": JSON.stringify(appName),
         "process.env.ENV": JSON.stringify(webpackMode),
         "process.env.NODE_ENV": JSON.stringify(webpackMode),
         ...envObject,
