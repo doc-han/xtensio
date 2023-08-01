@@ -55,12 +55,6 @@ async function compileManifestTS(mPath: string, cwd: string) {
   return activePath as string;
 }
 
-function clearTmpDir(cwd: string) {
-  // clear tmpdir if it exists
-  if (directoryExists(getTmpDir(cwd)))
-    rmSync(getTmpDir(cwd), { force: true, recursive: true });
-}
-
 export const getXtensioWebpackConfig = async (
   cwd: string,
   dev: boolean = true
@@ -68,7 +62,6 @@ export const getXtensioWebpackConfig = async (
   const envObject = getEnvObject(cwd, dev);
   const applicationJson = await import(path.join(cwd, "./package.json"));
   const appName = applicationJson.name as string;
-  clearTmpDir(cwd);
   const popup = path.join(cwd, "./popup/popup.tsx");
   const isPopup = fileExists(popup);
   const background = path.join(cwd, "./background/index.ts");
@@ -163,7 +156,6 @@ export const getXtensioWebpackConfig = async (
       js: [file.filename + ".js"],
     }));
 
-  clearTmpDir(cwd);
   const webpackMode = dev ? "development" : "production";
   return {
     mode: webpackMode,
@@ -179,6 +171,7 @@ export const getXtensioWebpackConfig = async (
       ...contentsEntry,
     },
     output: {
+      clean: true,
       path: path.join(cwd, `./.xtensio/${dev ? "dev" : "build"}`),
       filename: "[name].js",
     },
