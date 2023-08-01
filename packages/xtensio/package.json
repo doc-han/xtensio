@@ -19,7 +19,9 @@
   "scripts": {
     "build": "yarn tsc && cp -r ./template ./.build/src/",
     "exec": "yarn build && ./bin/xtensio",
-    "push": "yarn build && npm publish"
+    "push": "yarn build && npm publish",
+    "lint": "prettier . --check",
+    "lint:fix": "prettier . --write"
   },
   "dependencies": {
     "@babel/core": "^7.22.8",
@@ -62,6 +64,7 @@
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@types/schema-utils": "^2.4.0",
-    "@types/webpack": "^5.28.1"
+    "@types/webpack": "^5.28.1",
+    "prettier": "3.0.0"
   }
 }

@@ -1,26 +1,26 @@
-import path from "path";
-import { LoaderContext } from "webpack";
-import { ContentConfig } from "../../types/lib";
+import path from "path"
+import { LoaderContext } from "webpack"
+import { ContentConfig } from "../../types/lib"
 
 interface Options {
-  configMap: Map<string, ContentConfig>;
-  appName: string;
+  configMap: Map<string, ContentConfig>
+  appName: string
 }
 
 export default function importReactLoader(
   this: LoaderContext<Options>,
   source: string
 ) {
-  const resourcePath = this.resourcePath;
-  const resourceFilename = path.basename(resourcePath);
-  const options = this.getOptions();
-  const appName = options.appName;
+  const resourcePath = this.resourcePath
+  const resourceFilename = path.basename(resourcePath)
+  const options = this.getOptions()
+  const appName = options.appName
   if (!(options.configMap instanceof Map))
-    throw new Error("importReactLoader requires options.contents to be a map");
+    throw new Error("importReactLoader requires options.contents to be a map")
 
-  const contentConfig = options.configMap.get(resourceFilename);
+  const contentConfig = options.configMap.get(resourceFilename)
   if (contentConfig?.component) {
-    const shadowRoot = contentConfig.shadowRoot;
+    const shadowRoot = contentConfig.shadowRoot
     if (shadowRoot)
       return `
 import { createRoot as __createRoot } from "react-dom/client";
@@ -58,7 +58,7 @@ document.querySelector("html").append(__appHost);
 __appShadowRoot.attachShadow({ mode: "open" }).append(getLinkTag(), __appRoot);
 const __root = __createRoot(__appRoot);
 __root.render(<${contentConfig.component}/>);
- `;
+ `
     else
       return `
  import { createRoot as __createRoot } from "react-dom/client";
@@ -69,6 +69,6 @@ __root.render(<${contentConfig.component}/>);
  document.querySelector("html").append(__appHost);
  const __root = __createRoot(__appRoot);
  __root.render(<${contentConfig.component}/>);
-     `;
-  } else return source;
+     `
+  } else return source
 }

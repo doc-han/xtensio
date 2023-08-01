@@ -6,7 +6,9 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn workspaces run build",
-    "push": "yarn workspaces run push"
+    "push": "yarn workspaces run push",
+    "lint": "yarn workspaces run lint",
+    "lint:fix": "yarn workspaces run lint:fix"
   },
   "workspaces": [
     "packages/*"

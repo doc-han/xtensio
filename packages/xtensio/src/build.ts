@@ -1,17 +1,17 @@
-import { getXtensioWebpackConfig } from "./config/webpack.config";
-import webpack from "webpack";
+import { getXtensioWebpackConfig } from "./config/webpack.config"
+import webpack from "webpack"
 
 export default function buildCommand(cwd: string) {
-  return new Promise<void>(async resolve=> {
-  const webpackConfig = await getXtensioWebpackConfig(cwd, false);
-  webpack(webpackConfig, (err, stats) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(stats?.toString({colors: true}))
-      console.log("Extension bundled for production!");
-    }
-      resolve();
-  });
+  return new Promise<void>(async (resolve) => {
+    const webpackConfig = await getXtensioWebpackConfig(cwd, false)
+    webpack(webpackConfig, (err, stats) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(stats?.toString({ colors: true }))
+        console.log("Extension bundled for production!")
+      }
+      resolve()
+    })
   })
 }

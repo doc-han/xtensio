@@ -7,15 +7,27 @@
     "create-extension-app": "./bin/create-xtensio-app"
   },
   "scripts": {
-    "build-script": "chmod +x ./build-script && ./build-script",
+    "build-script": "node build-script.js && yarn lint:fix",
     "build": "yarn workspace create-xtensio-app run build && yarn build-script",
     "clean": "yarn build-script clean",
-    "push": "yarn build && npm publish && yarn clean"
+    "push": "yarn build && npm publish && yarn clean",
+    "lint": "prettier . --check",
+    "lint:fix": "prettier . --write"
   },
   "description": "Create a new extension project pretty quick",
   "files": [
     ".build",
     "bin",
     "tsconfig.json"
-  ]
+  ],
+  "devDependencies": {
+    "prettier": "3.0.0"
+  },
+  "dependencies": {
+    "listr": "^0.14.3",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
+    "lodash.upperfirst": "^4.3.1",
+    "pkg-install": "^1.0.0"
+  }
 }

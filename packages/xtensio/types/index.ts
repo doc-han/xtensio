@@ -1,15 +1,14 @@
-export type Commands = "generate" | "build" | "dev";
+export type Commands = "generate" | "build" | "dev"
 
 export enum ExtensionOptionsKey {
   Background,
   Contentscript,
   Popup,
-  ExtensionPages,
+  ExtensionPages
 }
 
-export type GenerateValues = "popup" | "page" | "contents" | "background";
+export type GenerateValues = "popup" | "page" | "contents" | "background"
 
 export interface TemplateVariables {
-  "app-name": string;
+  "app-name": string
 }
-
