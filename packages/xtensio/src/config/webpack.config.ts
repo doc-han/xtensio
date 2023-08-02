@@ -15,6 +15,8 @@ import { ProjectPaths } from "./projectPaths"
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
 // TODO remove all extension code from tabs when extension is removed.
 
+const acceptedJsFilesRE = /\.(js|jsx|ts|tsx)$/i
+
 const getEnvObject = (cwd: string, dev: boolean) => {
   const envFiles = [
     ".env",
@@ -106,10 +108,9 @@ export const getXtensioWebpackConfig = async (
   const isContents = directoryExists(mPaths.contentsFolder)
 
   const contentFiles = isContents
-    ? (await fs.readdir(mPaths.contentsFolder)).filter((f) => {
-        const ext = path.extname(f)
-        return ext === ".ts" || ext === ".tsx" || ext === ".js"
-      })
+    ? (await fs.readdir(mPaths.contentsFolder)).filter((f) =>
+        acceptedJsFilesRE.test(f)
+      )
     : []
   const contentFilesAndExt = await Promise.all(
     contentFiles.map(async (file) => {
@@ -161,6 +162,32 @@ export const getXtensioWebpackConfig = async (
       js: [file.filename + ".js"]
     }))
 
+  const isPages = directoryExists(mPaths.pagesFolder)
+  const pageFiles = isPages
+    ? (await fs.readdir(mPaths.pagesFolder)).filter((f) =>
+        acceptedJsFilesRE.test(f)
+      )
+    : []
+  const pageFilesAndExt = pageFiles.map((file) => {
+    const ext = path.extname(file)
+    return {
+      filename: path.basename(file, ext),
+      ext
+    }
+  })
+  const pageNamesAndPaths = pageFilesAndExt.map((file) => {
+    return {
+      [file.filename]: {
+        import: path.join(mPaths.pagesFolder, `./${file.filename}${file.ext}`),
+        filename: "pages/[name].js"
+      }
+    }
+  })
+  const pagesEntry = Object.assign({}, ...pageNamesAndPaths) as Record<
+    string,
+    string
+  >
+
   const webpackMode = dev ? "development" : "production"
   return {
     mode: webpackMode,
@@ -169,11 +196,8 @@ export const getXtensioWebpackConfig = async (
     entry: {
       ...(isPopup ? { popup: mPaths.popup } : {}),
       ...(isBackground ? { background: mPaths.background } : {}),
-      // TODO go through everything in pages folder.
-      // get the default export supposed to be a react component
-      // inject code that create the react mount and renders the component
-      // now use new file for webpack here!
-      ...contentsEntry
+      ...contentsEntry,
+      ...pagesEntry
     },
     output: {
       clean: true,
@@ -196,6 +220,7 @@ export const getXtensioWebpackConfig = async (
         },
         {
           test: new RegExp(path.basename(mPaths.popup)),
+          include: /\/popup\//,
           exclude: "/node_modules/",
           use: [
             babelLoader,
@@ -208,7 +233,21 @@ export const getXtensioWebpackConfig = async (
           ]
         },
         {
-          test: /\.(js|jsx|ts|tsx)$/,
+          test: acceptedJsFilesRE,
+          include: /\/pages\//,
+          exclude: "/node_modules/",
+          use: [
+            babelLoader,
+            {
+              loader: getLoader("reactMountLoader"),
+              options: {
+                appName
+              }
+            }
+          ]
+        },
+        {
+          test: acceptedJsFilesRE,
           include: /\/contents\//,
           exclude: /node_modules/,
           use: [
@@ -223,7 +262,7 @@ export const getXtensioWebpackConfig = async (
           ]
         },
         {
-          test: /\.(js|jsx|ts|tsx)$/,
+          test: acceptedJsFilesRE,
           exclude: "/node_modules/",
           use: babelLoader
         },
@@ -269,6 +308,13 @@ export const getXtensioWebpackConfig = async (
         chunks: ["popup"],
         filename: "popup.html"
       }),
+      ...pageFilesAndExt.map(
+        (file) =>
+          new HtmlWebpackPlugin({
+            chunks: [file.filename],
+            filename: `pages/${file.filename}.html`
+          })
+      ),
       new MiniCssExtractPlugin({
         filename: `${appName}-styles.css`
       })

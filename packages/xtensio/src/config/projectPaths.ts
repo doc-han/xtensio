@@ -10,6 +10,7 @@ export interface ProjectPaths {
   background: string
   manifest: string
   contentsFolder: string
+  pagesFolder: string
 }
 
 export default function getProjectPaths(cwd: string): ProjectPaths {
@@ -22,6 +23,7 @@ export default function getProjectPaths(cwd: string): ProjectPaths {
     popup: path.join(cwd, "./popup/popup.tsx"),
     background: path.join(cwd, "./background/index.ts"),
     manifest: path.join(cwd, "./manifest.ts"),
-    contentsFolder: path.join(cwd, "./contents")
+    contentsFolder: path.join(cwd, "./contents"),
+    pagesFolder: path.join(cwd, "./pages")
   }
 }
