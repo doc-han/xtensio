@@ -64,7 +64,8 @@ export const getXtensioWebpackConfig = async (
 ) => {
   const envObject = getEnvObject(cwd, dev)
   const applicationJson = await import(path.join(cwd, "./package.json"))
-  const appName = applicationJson.name as string
+  const appName = (applicationJson.xtensio?.name ||
+    applicationJson.name) as string
   const popup = path.join(cwd, "./popup/popup.tsx")
   const isPopup = fileExists(popup)
   const background = path.join(cwd, "./background/index.ts")

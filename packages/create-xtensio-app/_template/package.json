@@ -5,6 +5,9 @@
     "dev": "xtensio dev",
     "build": "xtensio build"
   },
+  "xtensio": {
+    "name": "{{app-name}}"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
