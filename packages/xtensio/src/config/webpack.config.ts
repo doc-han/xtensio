@@ -9,14 +9,11 @@ import { directoryExists, execute, fileExists } from "../helper"
 import "./environment"
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import dotenv from "dotenv"
+import { ProjectPaths } from "./projectPaths"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
 // TODO remove all extension code from tabs when extension is removed.
-
-const getTmpDir = (cwd: string) => {
-  return path.join(cwd, "./.xtensio/tmp")
-}
 
 const getEnvObject = (cwd: string, dev: boolean) => {
   const envFiles = [
@@ -42,37 +39,43 @@ const getEnvObject = (cwd: string, dev: boolean) => {
   )
 }
 
-async function compileManifestTS(mPath: string, cwd: string) {
+async function compileTSFile(
+  filePath: string,
+  projectDir: string,
+  tmpDir: string
+) {
   await execute(
-    `yarn tsc ${mPath} --outDir ${getTmpDir(
-      cwd
-    )} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess`
+    `yarn tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess`
   )
-  const relPath = path.relative(cwd, mPath)
-  const extName = path.extname(mPath)
+  const relPath = path.relative(projectDir, filePath)
+  const extName = path.extname(filePath)
   const possiblePaths = [
-    path.join(getTmpDir(cwd), path.basename(mPath).replace(extName, ".js")),
-    path.join(getTmpDir(cwd), relPath.replace(extName, ".js"))
+    path.join(tmpDir, path.basename(filePath).replace(extName, ".js")),
+    path.join(tmpDir, relPath.replace(extName, ".js"))
   ]
   const activePath = possiblePaths.find((p) => fileExists(p))
   return activePath as string
 }
 
 export const getXtensioWebpackConfig = async (
-  cwd: string,
+  mPaths: ProjectPaths,
   dev: boolean = true
 ) => {
-  const envObject = getEnvObject(cwd, dev)
-  const applicationJson = await import(path.join(cwd, "./package.json"))
+  // cleaning tmpDirs
+  rmSync(mPaths.tmpDir, { force: true, recursive: true })
+
+  const envObject = getEnvObject(mPaths.projectDirectory, dev)
+  const applicationJson = await import(mPaths.packageJSON)
   const appName = (applicationJson.xtensio?.name ||
     applicationJson.name) as string
-  const popup = path.join(cwd, "./popup/popup.tsx")
-  const isPopup = fileExists(popup)
-  const background = path.join(cwd, "./background/index.ts")
-  const isBackground = fileExists(background)
-  const manifest = path.join(cwd, "./manifest.ts")
+  const isPopup = fileExists(mPaths.popup)
+  const isBackground = fileExists(mPaths.background)
 
-  const baseManifest = await compileManifestTS(manifest, cwd)
+  const baseManifest = await compileTSFile(
+    mPaths.manifest,
+    mPaths.projectDirectory,
+    mPaths.tmpDir
+  )
   const importObj = await import(baseManifest)
   const manifestObj: chrome.runtime.Manifest = {
     ...(importObj?.default || importObj),
@@ -108,19 +111,22 @@ export const getXtensioWebpackConfig = async (
     }
   }
 
-  const contentsDir = path.join(cwd, "./contents")
-  const isContents = directoryExists(contentsDir)
+  const isContents = directoryExists(mPaths.contentsFolder)
 
   const contentFiles = isContents
-    ? (await fs.readdir(path.join(cwd, "./contents"))).filter((f) => {
+    ? (await fs.readdir(mPaths.contentsFolder)).filter((f) => {
         const ext = path.extname(f)
         return ext === ".ts" || ext === ".tsx" || ext === ".js"
       })
     : []
   const contentFilesAndExt = await Promise.all(
     contentFiles.map(async (file) => {
-      const contentLoc = path.join(contentsDir, file)
-      const compiled = await compileManifestTS(contentLoc, cwd)
+      const contentLoc = path.join(mPaths.contentsFolder, file)
+      const compiled = await compileTSFile(
+        contentLoc,
+        mPaths.projectDirectory,
+        mPaths.tmpDir
+      )
       const codeImport = await import(compiled)
       // TODO get name of what's in component [function, class]
       const defaultExport = codeImport?.default || codeImport || {}
@@ -146,7 +152,10 @@ export const getXtensioWebpackConfig = async (
   const contentNamesAndPaths = contentFilesAndExt
     .filter((file) => !!file.config.matches?.length)
     .map((file) => ({
-      [file.filename]: path.join(cwd, `./contents/${file.filename}${file.ext}`)
+      [file.filename]: path.join(
+        mPaths.contentsFolder,
+        `./${file.filename}${file.ext}`
+      )
     }))
   const contentsEntry = Object.assign({}, ...contentNamesAndPaths) as Record<
     string,
@@ -166,8 +175,8 @@ export const getXtensioWebpackConfig = async (
     devtool: dev ? "inline-source-map" : undefined,
     watch: dev ? true : false,
     entry: {
-      ...(isPopup ? { popup } : {}),
-      ...(isBackground ? { background } : {}),
+      ...(isPopup ? { popup: mPaths.popup } : {}),
+      ...(isBackground ? { background: mPaths.background } : {}),
       // TODO go through everything in pages folder.
       // get the default export supposed to be a react component
       // inject code that create the react mount and renders the component
@@ -176,7 +185,7 @@ export const getXtensioWebpackConfig = async (
     },
     output: {
       clean: true,
-      path: path.join(cwd, `./.xtensio/${dev ? "dev" : "build"}`),
+      path: dev ? mPaths.devOutput : mPaths.prodOutput,
       filename: "[name].js"
     },
     module: {
@@ -194,7 +203,7 @@ export const getXtensioWebpackConfig = async (
           ]
         },
         {
-          test: new RegExp(path.basename(popup)),
+          test: new RegExp(path.basename(mPaths.popup)),
           exclude: "/node_modules/",
           use: [
             babelLoader,
