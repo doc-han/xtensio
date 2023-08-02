@@ -5,7 +5,7 @@ import path from "path"
 import webpack from "webpack"
 import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin"
 import { ContentConfig } from "../../types/lib"
-import { directoryExists, execute, fileExists } from "../helper"
+import { directoryExists, execute, fileExists, getLoader } from "../helper"
 import "./environment"
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import dotenv from "dotenv"
@@ -92,14 +92,6 @@ export const getXtensioWebpackConfig = async (
     ? { background: { service_worker: "background.js" } }
     : {}
 
-  const reactMountLoader = path.resolve(
-    __dirname,
-    "../loaders/reactMountLoader.js"
-  )
-  const importReactLoader = path.resolve(
-    __dirname,
-    "../loaders/importReactLoader.js"
-  )
   const babelLoader = {
     loader: "babel-loader",
     options: {
@@ -208,7 +200,7 @@ export const getXtensioWebpackConfig = async (
           use: [
             babelLoader,
             {
-              loader: reactMountLoader,
+              loader: getLoader("reactMountLoader"),
               options: {
                 appName
               }
@@ -222,7 +214,7 @@ export const getXtensioWebpackConfig = async (
           use: [
             babelLoader,
             {
-              loader: importReactLoader,
+              loader: getLoader("importReactLoader"),
               options: {
                 configMap,
                 appName

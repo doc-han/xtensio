@@ -98,3 +98,11 @@ export function execute(cmd: string) {
     })
   })
 }
+
+export function getLoader(loader: string) {
+  const extname = path.extname(loader)
+  return path.resolve(
+    __dirname,
+    `./loaders/${path.basename(loader, extname)}.js`
+  )
+}
