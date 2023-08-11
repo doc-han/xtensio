@@ -49,11 +49,10 @@ export function directoryExists(dirPath: string) {
   return fileExists(dirPath)
 }
 
-// TODO optimize this function
-// it's currently heavy as it visits all the nodes
-// we want to exit the loop as soon as we've found name
-// Idea 1 - Easy fix(use regex): export\s+default\s+(?:function\s+)?(\w+)
+// deal with syntax [export {smth as default}]
 export function findDefaultExportName(sourceCode: string): string | undefined {
+  const m = sourceCode.match(/export\s+default\s+(?:function\s+)?(\w+)/)
+  if (m && m[1]) return m[1]
   const sourceFile = ts.createSourceFile(
     "module.ts",
     sourceCode,
