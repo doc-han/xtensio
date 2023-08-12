@@ -55,7 +55,7 @@ Below is what the project structure with xtensio looks like and we'll be focusin
 Inside the popup folder is a file `popup.tsx` which exports a React component. This is the single entry point for your extension popup. The extension popup is the view that is rendered when you click on an extension icon. Just like seen in the image below.
 
 <div align="center">
-    <img style="width: 50%" src="./statics/extension-popup-image.png" />
+    <img style="width: 80%" src="./statics/extension-popup-image.png" />
 </div>
 
 > In case your extension requires no popup then you can just delete or get rid of this file located at `/popup/popup.tsx`
