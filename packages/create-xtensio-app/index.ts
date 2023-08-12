@@ -6,13 +6,19 @@ import fs from "fs/promises"
 import kebabCase from "lodash.kebabcase"
 import camelCase from "lodash.camelcase"
 import upperFirst from "lodash.upperfirst"
-import readline from "readline/promises"
+import readline from "readline"
 import { exec } from "node:child_process"
 
 const readlineInstance = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 })
+
+const askQuestion = (question: string): Promise<string> => {
+  return new Promise((resolve) => {
+    readlineInstance.question(question, resolve)
+  })
+}
 
 // TODO remove unwanted filename characters
 export const nameHelper = (str: string) => {
@@ -29,9 +35,7 @@ export const nameHelper = (str: string) => {
 
 export default async function createCommand(cwd: string, value?: string) {
   const projectName = nameHelper(
-    value
-      ? value
-      : await readlineInstance.question("What's the name of your project? ")
+    value ? value : await askQuestion("What's the name of your project? ")
   )
 
   const projectDir = path.join(cwd, projectName.kebab)
