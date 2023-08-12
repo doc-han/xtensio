@@ -1,5 +1,5 @@
-<h1 align="center" style="padding: 50px 0px">
-        <img width="400px" src="./statics/xtensio.png" />
+<h1 align="center">
+        <img style="margin: 50px 0px" width="400px" src="./statics/xtensio.png" />
 </h1>
 
 A javascript framework for building browser extensions. It takes away all the tedious configurations away from you and lowers the barrier to extension development.
