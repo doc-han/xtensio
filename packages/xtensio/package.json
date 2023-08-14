@@ -1,6 +1,6 @@
 {
   "name": "xtensio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A browser extension development tool",
   "main": "./.build/index.js",
   "author": "Farhan Yahaya",
@@ -13,13 +13,16 @@
     ".build",
     "bin",
     "types",
+    "statics",
     "index.d.ts",
-    "tsconfig.json"
+    "tsconfig.json",
+    "README.md"
   ],
   "scripts": {
-    "build": "yarn tsc && cp -r ./template ./.build/src/",
+    "build": "yarn tsc && cp -r ./template ./.build/src/ && cp -r ../../README.md ./ && cp -r ../../statics ./",
+    "clean": "rm -rf ./statics ./README.md",
     "exec": "yarn build && ./bin/xtensio",
-    "push": "yarn build && npm publish",
+    "push": "yarn build && npm publish && yarn clean",
     "lint": "prettier . --check",
     "lint:fix": "prettier . --write"
   },
