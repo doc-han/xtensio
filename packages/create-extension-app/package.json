@@ -1,6 +1,6 @@
 {
   "name": "create-extension-app",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "index.js",
   "license": "MIT",
   "bin": {
@@ -24,6 +24,7 @@
     "prettier": "3.0.0"
   },
   "dependencies": {
+    "chalk": "~4",
     "listr": "^0.14.3",
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",

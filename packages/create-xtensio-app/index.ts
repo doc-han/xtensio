@@ -8,6 +8,7 @@ import camelCase from "lodash.camelcase"
 import upperFirst from "lodash.upperfirst"
 import readline from "readline"
 import { exec } from "child_process"
+import chalk from "chalk"
 
 const readlineInstance = readline.createInterface({
   input: process.stdin,
@@ -116,7 +117,23 @@ export default async function createCommand(cwd: string, value?: string) {
       })
   })
 
-  tasks.run().catch((err) => {
-    console.error(err)
-  })
+  tasks
+    .run()
+    .catch(console.error)
+    .then(() => {
+      console.log(`
+Successfully generated! 🔥🔥🔥
+${chalk.blue.bold("Available commands:")}
+    ${chalk.underline("yarn dev")}
+      starts the development server and injects extension.
+
+    ${chalk.underline("yarn build")}
+      builds for production into the /zips directory.
+
+${chalk.blue.bold("You can begin by:")}
+    cd ${chalk.green(projectName.kebab)}
+    yarn dev
+`)
+      process.exit()
+    })
 }
