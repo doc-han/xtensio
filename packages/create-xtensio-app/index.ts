@@ -7,7 +7,7 @@ import kebabCase from "lodash.kebabcase"
 import camelCase from "lodash.camelcase"
 import upperFirst from "lodash.upperfirst"
 import readline from "readline"
-import { exec } from "node:child_process"
+import { exec } from "child_process"
 
 const readlineInstance = readline.createInterface({
   input: process.stdin,
