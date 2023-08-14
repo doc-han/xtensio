@@ -63,7 +63,7 @@ export default async function createCommand(cwd: string, value?: string) {
           await fs.writeFile(
             path.join(projectDir, file),
             fileContent.replace(
-              "{{app-name}}",
+              /{{app-name}}/gi,
               isManifest ? projectName.name : projectName.kebab
             ),
             "utf-8"

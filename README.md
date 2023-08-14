@@ -1,5 +1,5 @@
 <h1 align="center">
-        <img style="margin: 50px 0px" width="400px" src="./statics/xtensio.png" />
+        <img style="margin: 50px 0px" width="400px" src="https://raw.githubusercontent.com/doc-han/xtensio/master/statics/xtensio.png" />
 </h1>
 
 A javascript framework for building browser extensions. It takes away all the tedious configurations away from you and lowers the barrier to extension development.
@@ -10,7 +10,7 @@ A javascript framework for building browser extensions. It takes away all the te
 
 ### 🚀 Creating a new Extension Project
 
-To create a new extension project using xtensio, you can use the `create` command below which will then ask for your project name and
+To create a new extension project using xtensio, you can use the `create` command below which will then ask for your project name.
 
 ```bash
 # npm
@@ -36,14 +36,14 @@ Below is what the project structure with xtensio looks like and we'll be focusin
 
 <pre>
 .
-├── 📂 <a href="#📂-popup" style="color: inherit;text-decoration: underline">popup</a>
+├── 📂 <a href="#-popup" style="color: inherit;text-decoration: underline">popup</a>
 │   └── popup.tsx
-├── 📂 <a href="#📂-contents" style="color: inherit;text-decoration: underline">contents</a>
+├── 📂 <a href="#-contents" style="color: inherit;text-decoration: underline">contents</a>
 │   ├── content_one.tsx
 │   └── content_two.tsx
-├── 📂 <a href="#📂-pages" style="color: inherit;text-decoration: underline">pages</a>
+├── 📂 <a href="#-pages" style="color: inherit;text-decoration: underline">pages</a>
 │   └── options.tsx
-├── 📂 <a href="#📂-background" style="color: inherit;text-decoration: underline">background</a>
+├── 📂 <a href="#-background" style="color: inherit;text-decoration: underline">background</a>
 │   └── index.ts
 ├── manifest.ts
 ├── index.d.ts
@@ -55,7 +55,7 @@ Below is what the project structure with xtensio looks like and we'll be focusin
 Inside the popup folder is a file `popup.tsx` which exports a React component. This is the single entry point for your extension popup. The extension popup is the view that is rendered when you click on an extension icon. Just like seen in the image below.
 
 <div align="center">
-    <img style="width: 80%" src="./statics/extension-popup-image.png" />
+    <img style="width: 80%" src="https://raw.githubusercontent.com/doc-han/xtensio/master/statics/extension-popup-image.png" />
 </div>
 
 > In case your extension requires no popup then you can just delete or get rid of this file located at `/popup/popup.tsx`
@@ -95,4 +95,4 @@ Inside the background folder is an `index.ts` file which serves as your single e
 
 This is the main file that handles most of the configurations related to a browser extension. It exports a JavaScript object as default which is used in generating the [manifest.json](https://developer.chrome.com/docs/extensions/mv3/manifest/) which is required when creating a browser extension.
 
-Even tho this configuration can be extended, some parts of it may be overwritten by xtensio. Mainly the `content_scripts` `background` `action`.
+Even though this configuration can be extended, some parts of it may be overwritten by xtensio. Mainly the `content_scripts` `background` `action`.
