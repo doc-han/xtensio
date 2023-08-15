@@ -66,7 +66,43 @@ Inside the popup folder is a file `popup.tsx` which exports a React component. T
 
 The primary goal of a browser extension is to change the user experience in the browser. This could mean changing the looks or adding some weird functionalities to websites rendered in the browser. All that great magic is handled in this contents directory.
 
-**TODO**: Write about the contents file syntax
+Here is an example of a contentscript that renders a simple box modal at the right bottom corner whenever a user is on the google.com website.
+
+```typescript
+// filename: /contents/googleGPT.tsx
+import React from "react";
+import styles from "./googleGPT.modules.css";
+
+// export a function called getConfig - This is required
+// matches is an array of URL's where the code in this file should execute - required
+export function getConfig() {
+  return {
+    matches: ["*://*.google.com"],
+  };
+}
+
+// This code will be logged whenever the user is
+// on the websites specified in matches above
+console.log("I'm on the google page!");
+
+const BoxModal: React.FC = () => {
+  return (
+    <div className={styles.boxModal}>
+      <button>Search with GPT</button>
+    </div>
+  );
+};
+
+// If your default export is a React component we'll mount it on
+// the websites specified in matches above
+export default BoxModal;
+```
+
+As you can see above, you're required to export a function `getConfig` which specifies where the content file should be executed. Then, any code written in the file will be executed once the user is on the websites specified in `getConfig`.
+
+Also, if your **default export** is a React component, then it'll be nicely mounted into the website for you.
+
+> **NOTE:** you can give any name to the files you create in this directory. They just need to export the getConfig function specifying the websites.
 
 ### 📂 Pages
 
