@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build-script": "node build-script.js && yarn lint:fix",
-    "build": "yarn workspace create-xtensio-app run build && yarn build-script",
+    "build": "yarn workspace create-xtensio-app run build && rm -rf ./.build/ && yarn build-script",
     "clean": "yarn build-script clean",
     "push": "yarn build && npm publish && yarn clean",
     "lint": "prettier . --check",

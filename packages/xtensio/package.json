@@ -49,6 +49,7 @@
     "mini-css-extract-plugin": "^2.7.6",
     "pkg-install": "^1.0.0",
     "react": "^18.2.0",
+    "react-refresh": "^0.14.0",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
     "schema-utils": "^4.2.0",
@@ -69,6 +70,7 @@
     "@types/node": "^20.4.1",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
+    "@types/react-refresh": "^0.14.0",
     "@types/schema-utils": "^2.4.0",
     "@types/webpack": "^5.28.1",
     "prettier": "3.0.0"

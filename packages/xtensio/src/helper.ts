@@ -105,3 +105,17 @@ export function getLoader(loader: string) {
     `./loaders/${path.basename(loader, extname)}.js`
   )
 }
+
+export function validateMatches(matches: any) {
+  return (
+    typeof matches === "string" ||
+    (typeof matches === "object" &&
+      Array.isArray(matches) &&
+      matches.length > 0 &&
+      matches.reduce((a, b) => a && typeof b === "string", true))
+  )
+}
+
+export function validateGetConfig(getConfig: any) {
+  return typeof getConfig === "function"
+}

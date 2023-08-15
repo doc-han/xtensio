@@ -16,7 +16,7 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "yarn tsc && cp -r ./_template ./.build",
+    "build": "yarn tsc && rm -rf ./.build/_template && cp -r ./_template ./.build",
     "push": "yarn build && npm publish",
     "lint": "prettier . --check",
     "lint:fix": "prettier . --write"

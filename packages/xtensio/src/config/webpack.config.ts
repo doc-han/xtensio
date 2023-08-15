@@ -5,11 +5,19 @@ import path from "path"
 import webpack from "webpack"
 import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin"
 import { ContentConfig } from "../../types/lib"
-import { directoryExists, execute, fileExists, getLoader } from "../helper"
+import {
+  directoryExists,
+  execute,
+  fileExists,
+  getLoader,
+  validateGetConfig,
+  validateMatches
+} from "../helper"
 import "./environment"
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import dotenv from "dotenv"
 import { ProjectPaths } from "./projectPaths"
+import Refresh from "react-refresh/runtime"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -114,25 +122,40 @@ export const getXtensioWebpackConfig = async (
     : []
   const contentFilesAndExt = await Promise.all(
     contentFiles.map(async (file) => {
+      const ext = path.extname(file)
+      const filename = path.basename(file, ext)
       const contentLoc = path.join(mPaths.contentsFolder, file)
       const compiled = await compileTSFile(
         contentLoc,
         mPaths.projectDirectory,
         mPaths.tmpDir
       )
-      const codeImport = await import(compiled)
-      // TODO get name of what's in component [function, class]
-      const defaultExport = codeImport?.default || codeImport || {}
-      const config: ContentConfig = {
-        matches: defaultExport.matches,
-        shadowRoot: defaultExport.shadowRoot,
-        component: defaultExport.component?.name || defaultExport.component
-      }
-      const ext = path.extname(file)
-      return {
-        filename: path.basename(file, ext),
-        ext,
-        config
+      const cImport = await import(compiled)
+      if (validateGetConfig(cImport.getConfig)) {
+        const fileConfig = cImport.getConfig?.()
+        if (fileConfig && validateMatches(fileConfig.matches)) {
+          const config: ContentConfig = {
+            matches: fileConfig.matches,
+            shadowRoot:
+              (fileConfig.shadowRoot ?? true) || !!fileConfig.shadowRoot,
+            component:
+              Refresh.isLikelyComponentType(cImport.default) &&
+              cImport.default.name
+          }
+          return {
+            filename,
+            ext,
+            config
+          }
+        } else {
+          throw new Error(
+            `[MATCHES_TYPE_ERROR]: The returned property matches from getConfig should be a string or an array of string. Error in ${file}`
+          )
+        }
+      } else {
+        throw new Error(
+          `[GET_CONFIG_REQUIRED]: The required function getConfig wasn't exported in ${file}.`
+        )
       }
     })
   )
