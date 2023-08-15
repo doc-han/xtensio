@@ -26,7 +26,7 @@ global.chrome = chrome
 // Mock Console object
 global.console = {
   ...console,
-  //   log() {},
+  log() {},
   error() {},
   debug() {}
 }

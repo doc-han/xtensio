@@ -20,6 +20,9 @@
     "bin",
     "tsconfig.json"
   ],
+  "engines": {
+    "node": ">=16"
+  },
   "devDependencies": {
     "prettier": "3.0.0"
   },

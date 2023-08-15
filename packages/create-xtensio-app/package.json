@@ -7,6 +7,9 @@
   "author": "doc-han <yahyafarhan48@gmail.com>",
   "license": "MIT",
   "bin": "./bin/create-xtensio-app",
+  "engines": {
+    "node": ">=16"
+  },
   "files": [
     ".build",
     "bin",
