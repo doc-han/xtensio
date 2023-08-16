@@ -55,7 +55,7 @@ async function compileTSFile(
   tmpDir: string
 ) {
   await execute(
-    `yarn tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess`
+    `yarn tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess --allowJs`
   )
   const relPath = path.relative(projectDir, filePath)
   const extName = path.extname(filePath)
