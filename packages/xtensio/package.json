@@ -1,6 +1,6 @@
 {
   "name": "xtensio",
-  "version": "0.1.2",
+  "version": "0.2.2",
   "description": "A browser extension development tool",
   "main": "./.build/index.js",
   "author": "Farhan Yahaya",
