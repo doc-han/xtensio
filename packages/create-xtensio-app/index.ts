@@ -6,20 +6,9 @@ import fs from "fs/promises"
 import kebabCase from "lodash.kebabcase"
 import camelCase from "lodash.camelcase"
 import upperFirst from "lodash.upperfirst"
-import readline from "readline"
 import { exec } from "child_process"
 import chalk from "chalk"
-
-const readlineInstance = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-})
-
-const askQuestion = (question: string): Promise<string> => {
-  return new Promise((resolve) => {
-    readlineInstance.question(question, resolve)
-  })
-}
+import prompts from "prompts"
 
 // TODO remove unwanted filename characters
 export const nameHelper = (str: string) => {
@@ -35,9 +24,31 @@ export const nameHelper = (str: string) => {
 }
 
 export default async function createCommand(cwd: string, value?: string) {
-  const projectName = nameHelper(
-    value ? value : await askQuestion("What's the name of your project? ")
-  )
+  let projectNameInput = value
+  if (!projectNameInput)
+    projectNameInput = (
+      await prompts({
+        type: "text",
+        message: "What's the name of your project?",
+        name: "projectName",
+        validate: (name) => typeof name === "string" && name.length > 0
+      })
+    ).projectName
+
+  if (!projectNameInput) throw Error("Project name not specified")
+  const projectName = nameHelper(projectNameInput)
+
+  const pkgManager = (
+    await prompts({
+      type: "toggle",
+      message: "Choose preferred package manager",
+      name: "pkgManager",
+      active: "yarn",
+      inactive: "npm"
+    })
+  ).pkgManager
+    ? "yarn"
+    : "npm"
 
   const projectDir = path.join(cwd, projectName.kebab)
   const tasks = new Listr([
@@ -84,7 +95,7 @@ export default async function createCommand(cwd: string, value?: string) {
           xtensio: undefined
         },
         {
-          prefer: "yarn",
+          prefer: pkgManager,
           dev: false,
           cwd: projectDir
         }
@@ -98,7 +109,7 @@ export default async function createCommand(cwd: string, value?: string) {
           "@types/chrome": undefined
         },
         {
-          prefer: "yarn",
+          prefer: pkgManager,
           dev: true,
           cwd: projectDir
         }
@@ -124,15 +135,15 @@ export default async function createCommand(cwd: string, value?: string) {
       console.log(`
 Successfully generated! 🔥🔥🔥
 ${chalk.blue.bold("Available commands:")}
-    ${chalk.underline("yarn dev")}
+    ${chalk.underline(pkgManager === "yarn" ? "yarn dev" : "npm run dev")}
       starts the development server and injects extension.
 
-    ${chalk.underline("yarn build")}
+    ${chalk.underline(pkgManager === "yarn" ? "yarn build" : "npm run build")}
       builds for production into the /zips directory.
 
 ${chalk.blue.bold("You can begin by:")}
     cd ${chalk.green(projectName.kebab)}
-    yarn dev
+    ${pkgManager === "yarn" ? "yarn dev" : "npm run dev"}
 `)
       process.exit()
     })

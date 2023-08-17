@@ -1,6 +1,6 @@
 {
   "name": "create-xtensio-app",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Create a new extension project pretty quick",
   "main": "./bin/create-xtensio-app",
   "repository": "https://github.com/doc-han/xtensio.git",
@@ -27,7 +27,8 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
-    "pkg-install": "^1.0.0"
+    "pkg-install": "^1.0.0",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.241",
@@ -35,6 +36,7 @@
     "@types/lodash.camelcase": "^4.3.7",
     "@types/lodash.kebabcase": "^4.1.7",
     "@types/lodash.upperfirst": "^4.3.7",
+    "@types/prompts": "^2.4.4",
     "prettier": "3.0.0"
   }
 }
