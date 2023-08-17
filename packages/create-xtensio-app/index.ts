@@ -79,8 +79,10 @@ export default async function createCommand(cwd: string, value?: string) {
       const files = await fs.readdir(templatePath)
       const manifestFile = isTs ? "manifest.ts" : "manifest.js"
       files.forEach(async (file) => {
+        let destFile = file
+        if (file === "gitignore") destFile = ".gitignore" // TODO to be fixed
         const filePath = path.join(templatePath, file)
-        const destPath = path.join(projectDir, file)
+        const destPath = path.join(projectDir, destFile)
         if (file === "package.json" || file === manifestFile) {
           const isManifest = file === manifestFile
           const fileContent = await fs.readFile(filePath, "utf-8")
