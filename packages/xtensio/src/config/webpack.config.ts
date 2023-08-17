@@ -52,10 +52,13 @@ const getEnvObject = (cwd: string, dev: boolean) => {
 async function compileTSFile(
   filePath: string,
   projectDir: string,
-  tmpDir: string
+  tmpDir: string,
+  isNpm: boolean
 ) {
   await execute(
-    `yarn tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess --allowJs`
+    `${
+      isNpm ? "npx" : "yarn"
+    } tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess --allowJs`
   )
   const relPath = path.relative(projectDir, filePath)
   const extName = path.extname(filePath)
@@ -74,6 +77,8 @@ export const getXtensioWebpackConfig = async (
   // cleaning tmpDirs
   rmSync(mPaths.tmpDir, { force: true, recursive: true })
 
+  const isNpm = fileExists(mPaths.npmLock)
+
   const envObject = getEnvObject(mPaths.projectDirectory, dev)
   const applicationJson = await import(mPaths.packageJSON)
   const appName = (applicationJson.xtensio?.name ||
@@ -84,7 +89,8 @@ export const getXtensioWebpackConfig = async (
   const baseManifest = await compileTSFile(
     mPaths.manifest,
     mPaths.projectDirectory,
-    mPaths.tmpDir
+    mPaths.tmpDir,
+    isNpm
   )
   const importObj = await import(baseManifest)
   const manifestObj: chrome.runtime.Manifest = {
@@ -128,7 +134,8 @@ export const getXtensioWebpackConfig = async (
       const compiled = await compileTSFile(
         contentLoc,
         mPaths.projectDirectory,
-        mPaths.tmpDir
+        mPaths.tmpDir,
+        isNpm
       )
       const cImport = await import(compiled)
       if (validateGetConfig(cImport.getConfig)) {

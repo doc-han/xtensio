@@ -1,0 +1,11 @@
+{
+  "name": "{{app-name}}",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "xtensio dev",
+    "build": "xtensio build"
+  },
+  "xtensio": {
+    "name": "{{app-name}}"
+  }
+}

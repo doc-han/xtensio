@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+  if (details.reason === "install") {
     console.log(`Extension just got installed!`)
   }
 })

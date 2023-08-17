@@ -1,0 +1,7 @@
+import packageJson from "./package.json"
+
+export default {
+  name: "{{app-name}}",
+  manifest_version: 3,
+  version: packageJson.version
+}

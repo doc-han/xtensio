@@ -50,6 +50,15 @@ export default async function createCommand(cwd: string, value?: string) {
     ? "yarn"
     : "npm"
 
+  const isTs = (
+    await prompts({
+      type: "confirm",
+      message: `Do you want to use ${chalk.blue("Typescript")}?`,
+      initial: true,
+      name: "isTs"
+    })
+  ).isTs
+
   const projectDir = path.join(cwd, projectName.kebab)
   const tasks = new Listr([
     {
@@ -63,13 +72,17 @@ export default async function createCommand(cwd: string, value?: string) {
   tasks.add({
     title: "Copying project files",
     task: async () => {
-      const templatePath = path.resolve(__dirname, "./_template")
+      const templatePath = path.resolve(
+        __dirname,
+        `./_template/${isTs ? "typescript" : "javascript"}`
+      )
       const files = await fs.readdir(templatePath)
+      const manifestFile = isTs ? "manifest.ts" : "manifest.js"
       files.forEach(async (file) => {
         const filePath = path.join(templatePath, file)
         const destPath = path.join(projectDir, file)
-        if (file === "package.json" || file === "manifest.ts") {
-          const isManifest = file === "manifest.ts"
+        if (file === "package.json" || file === manifestFile) {
+          const isManifest = file === manifestFile
           const fileContent = await fs.readFile(filePath, "utf-8")
           await fs.writeFile(
             path.join(projectDir, file),
