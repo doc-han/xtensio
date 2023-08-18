@@ -4,6 +4,7 @@ import HtmlWebpackPlugin from "html-webpack-plugin"
 import path from "path"
 import webpack from "webpack"
 import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin"
+import CopyPlugin from "copy-webpack-plugin"
 import { ContentConfig } from "../../types/lib"
 import {
   directoryExists,
@@ -347,6 +348,17 @@ export const getXtensioWebpackConfig = async (
       ),
       new MiniCssExtractPlugin({
         filename: `${appName}-styles.css`
+      }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: mPaths.publicPath,
+            to: path.join(
+              dev ? mPaths.devOutput : mPaths.prodOutput,
+              "./public"
+            )
+          }
+        ]
       })
     ]
   } as webpack.Configuration

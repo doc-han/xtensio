@@ -13,6 +13,7 @@ export interface ProjectPaths {
   contentsFolder: string
   pagesFolder: string
   npmLock: string
+  publicPath: string
 }
 
 function getJsFilePath(absPath: string, required = true) {
@@ -42,6 +43,7 @@ export default function getProjectPaths(cwd: string): ProjectPaths {
     manifest: getJsFilePath(path.join(cwd, `./manifest.ts`)),
     contentsFolder: path.join(cwd, "./contents"),
     pagesFolder: path.join(cwd, "./pages"),
-    npmLock: path.join(cwd, "./package-lock.json")
+    npmLock: path.join(cwd, "./package-lock.json"),
+    publicPath: path.join(cwd, "./public")
   }
 }
