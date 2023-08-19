@@ -19,6 +19,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import dotenv from "dotenv"
 import { ProjectPaths } from "./projectPaths"
 import Refresh from "react-refresh/runtime"
+import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -50,6 +51,14 @@ const getEnvObject = (cwd: string, dev: boolean) => {
   )
 }
 
+const getEntry = (entryPath: string, dev?: DevConfig) => {
+  return [
+    dev &&
+      `webpack-hot-middleware/client?path=http://localhost:${dev.port}/__webpack_hmr`,
+    entryPath
+  ].filter(Boolean)
+}
+
 async function compileTSFile(
   filePath: string,
   projectDir: string,
@@ -71,16 +80,21 @@ async function compileTSFile(
   return activePath as string
 }
 
+interface DevConfig {
+  port: number
+}
+
 export const getXtensioWebpackConfig = async (
   mPaths: ProjectPaths,
-  dev: boolean = true
+  dev?: DevConfig
 ) => {
+  const isDev = !!dev
   // cleaning tmpDirs
   rmSync(mPaths.tmpDir, { force: true, recursive: true })
 
   const isNpm = fileExists(mPaths.npmLock)
 
-  const envObject = getEnvObject(mPaths.projectDirectory, dev)
+  const envObject = getEnvObject(mPaths.projectDirectory, isDev)
   const applicationJson = await import(mPaths.packageJSON)
   const appName = (applicationJson.xtensio?.name ||
     applicationJson.name) as string
@@ -102,6 +116,14 @@ export const getXtensioWebpackConfig = async (
     ]
   }
 
+  const contentSecurity = isDev
+    ? {
+        content_security_policy: {
+          extension_pages: `script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' http://localhost:${dev.port}/`
+        }
+      }
+    : {}
+
   const popupManifest = isPopup
     ? { action: { default_popup: "popup.html" } }
     : {}
@@ -116,7 +138,8 @@ export const getXtensioWebpackConfig = async (
         "@babel/preset-env",
         "@babel/preset-react",
         "@babel/preset-typescript"
-      ]
+      ],
+      plugins: ["react-refresh/babel"]
     }
   }
 
@@ -209,7 +232,10 @@ export const getXtensioWebpackConfig = async (
   const pageNamesAndPaths = pageFilesAndExt.map((file) => {
     return {
       [file.filename]: {
-        import: path.join(mPaths.pagesFolder, `./${file.filename}${file.ext}`),
+        import: getEntry(
+          path.join(mPaths.pagesFolder, `./${file.filename}${file.ext}`),
+          dev
+        ),
         filename: "pages/[name].js"
       }
     }
@@ -219,21 +245,22 @@ export const getXtensioWebpackConfig = async (
     string
   >
 
-  const webpackMode = dev ? "development" : "production"
+  const webpackMode = isDev ? "development" : "production"
   return {
     mode: webpackMode,
-    devtool: dev ? "inline-source-map" : undefined,
-    watch: dev ? true : false,
+    devtool: isDev ? "inline-source-map" : undefined,
+    watch: isDev ? true : false,
     entry: {
-      ...(isPopup ? { popup: mPaths.popup } : {}),
+      ...(isPopup ? { popup: getEntry(mPaths.popup, dev) } : {}),
       ...(isBackground ? { background: mPaths.background } : {}),
       ...contentsEntry,
       ...pagesEntry
     },
     output: {
       clean: true,
-      path: dev ? mPaths.devOutput : mPaths.prodOutput,
-      filename: "[name].js"
+      path: isDev ? mPaths.devOutput : mPaths.prodOutput,
+      filename: "[name].js",
+      publicPath: isDev && `http://localhost:${dev.port}/`
     },
     module: {
       rules: [
@@ -319,6 +346,8 @@ export const getXtensioWebpackConfig = async (
       extensions: [".ts", ".tsx", ".js", ".jsx"]
     },
     plugins: [
+      isDev && new ReactRefreshPlugin(),
+      isDev && new webpack.HotModuleReplacementPlugin(),
       new webpack.DefinePlugin({
         "process.env.XTENSIO_APPNAME": JSON.stringify(appName),
         "process.env.ENV": JSON.stringify(webpackMode),
@@ -331,7 +360,8 @@ export const getXtensioWebpackConfig = async (
             ...manifestObj,
             ...popupManifest,
             ...backgroudManifest,
-            content_scripts: contentsManifest
+            content_scripts: contentsManifest,
+            ...contentSecurity
           }
         }
       }),
@@ -354,12 +384,12 @@ export const getXtensioWebpackConfig = async (
           {
             from: mPaths.publicPath,
             to: path.join(
-              dev ? mPaths.devOutput : mPaths.prodOutput,
+              isDev ? mPaths.devOutput : mPaths.prodOutput,
               "./public"
             )
           }
         ]
       })
-    ]
+    ].filter(Boolean)
   } as webpack.Configuration
 }

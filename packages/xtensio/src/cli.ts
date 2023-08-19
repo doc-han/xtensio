@@ -32,7 +32,7 @@ export async function xtensioCLI<T extends Commands>(
       execute(
         `${
           isNpm ? "npx" : "yarn"
-        } web-ext run --source-dir ${devPath} --target=chromium`
+        } web-ext run --source-dir ${devPath} --target=chromium --no-reload`
       )
       return
     default:
