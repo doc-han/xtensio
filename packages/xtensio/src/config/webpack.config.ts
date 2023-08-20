@@ -1,25 +1,23 @@
+import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin"
+import CopyPlugin from "copy-webpack-plugin"
+import dotenv from "dotenv"
 import { readFileSync, rmSync } from "fs"
 import fs from "fs/promises"
 import HtmlWebpackPlugin from "html-webpack-plugin"
+import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import path from "path"
+import Refresh from "react-refresh/runtime"
 import webpack from "webpack"
 import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin"
-import CopyPlugin from "copy-webpack-plugin"
 import { ContentConfig } from "../../types/lib"
 import {
   directoryExists,
-  execute,
   fileExists,
   getLoader,
-  validateGetConfig,
   validateMatches
 } from "../helper"
-import "./environment"
-import MiniCssExtractPlugin from "mini-css-extract-plugin"
-import dotenv from "dotenv"
+import { sanboxExec } from "../sandbox/helper"
 import { ProjectPaths } from "./projectPaths"
-import Refresh from "react-refresh/runtime"
-import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -59,27 +57,6 @@ const getEntry = (entryPath: string, dev?: DevConfig) => {
   ].filter(Boolean)
 }
 
-async function compileTSFile(
-  filePath: string,
-  projectDir: string,
-  tmpDir: string,
-  isNpm: boolean
-) {
-  await execute(
-    `${
-      isNpm ? "npx" : "yarn"
-    } tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess --allowJs`
-  )
-  const relPath = path.relative(projectDir, filePath)
-  const extName = path.extname(filePath)
-  const possiblePaths = [
-    path.join(tmpDir, path.basename(filePath).replace(extName, ".js")),
-    path.join(tmpDir, relPath.replace(extName, ".js"))
-  ]
-  const activePath = possiblePaths.find((p) => fileExists(p))
-  return activePath as string
-}
-
 interface DevConfig {
   port: number
 }
@@ -101,15 +78,15 @@ export const getXtensioWebpackConfig = async (
   const isPopup = fileExists(mPaths.popup)
   const isBackground = fileExists(mPaths.background)
 
-  const baseManifest = await compileTSFile(
+  const { default: manifestDefault } = await sanboxExec(
     mPaths.manifest,
     mPaths.projectDirectory,
     mPaths.tmpDir,
-    isNpm
+    isNpm,
+    { default: "default" }
   )
-  const importObj = await import(baseManifest)
   const manifestObj: chrome.runtime.Manifest = {
-    ...(importObj?.default || importObj),
+    ...manifestDefault,
     web_accessible_resources: [
       // TODO let the matches here match what is coming from contentscripts
       { resources: ["*"], matches: ["<all_urls>"] }
@@ -155,23 +132,28 @@ export const getXtensioWebpackConfig = async (
       const ext = path.extname(file)
       const filename = path.basename(file, ext)
       const contentLoc = path.join(mPaths.contentsFolder, file)
-      const compiled = await compileTSFile(
+      const {
+        getConfig,
+        name,
+        default: isLikelyReact
+      } = await sanboxExec(
         contentLoc,
         mPaths.projectDirectory,
         mPaths.tmpDir,
-        isNpm
+        isNpm,
+        {
+          getConfig: "getConfig.()",
+          name: "default.name",
+          default: "default.rx()"
+        }
       )
-      const cImport = await import(compiled)
-      if (validateGetConfig(cImport.getConfig)) {
-        const fileConfig = cImport.getConfig?.()
-        if (fileConfig && validateMatches(fileConfig.matches)) {
+      if (getConfig) {
+        if (getConfig && validateMatches(getConfig.matches)) {
           const config: ContentConfig = {
-            matches: fileConfig.matches,
+            matches: getConfig.matches,
             shadowRoot:
-              (fileConfig.shadowRoot ?? true) || !!fileConfig.shadowRoot,
-            component:
-              Refresh.isLikelyComponentType(cImport.default) &&
-              cImport.default.name
+              (getConfig.shadowRoot ?? true) || !!getConfig.shadowRoot,
+            component: isLikelyReact && name
           }
           return {
             filename,
