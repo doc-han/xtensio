@@ -49,12 +49,8 @@ const getEnvObject = (cwd: string, dev: boolean) => {
   )
 }
 
-const getEntry = (entryPath: string, dev?: DevConfig) => {
-  return [
-    dev &&
-      `webpack-hot-middleware/client?path=http://localhost:${dev.port}/__webpack_hmr`,
-    entryPath
-  ].filter(Boolean)
+const getEntry = (devPaths: string[], entryPath: string[], dev?: DevConfig) => {
+  return [...(dev ? devPaths : []), ...entryPath].filter(Boolean)
 }
 
 interface DevConfig {
@@ -90,7 +86,9 @@ export const getXtensioWebpackConfig = async (
     web_accessible_resources: [
       // TODO let the matches here match what is coming from contentscripts
       { resources: ["*"], matches: ["<all_urls>"] }
-    ]
+    ],
+    permissions: [...(manifestDefault.permissions || []), "scripting"],
+    host_permissions: ["<all_urls>"]
   }
 
   const contentSecurity = isDev
@@ -116,9 +114,10 @@ export const getXtensioWebpackConfig = async (
         "@babel/preset-react",
         "@babel/preset-typescript"
       ],
-      plugins: ["react-refresh/babel"]
+      plugins: dev && ["react-refresh/babel"]
     }
   }
+  const hotMiddlewareClient = `webpack-hot-middleware/client?path=http://localhost:${dev?.port}/__webpack_hmr`
 
   const isContents = directoryExists(mPaths.contentsFolder)
 
@@ -181,9 +180,10 @@ export const getXtensioWebpackConfig = async (
   const contentNamesAndPaths = contentFilesAndExt
     .filter((file) => !!file.config.matches?.length)
     .map((file) => ({
-      [file.filename]: path.join(
-        mPaths.contentsFolder,
-        `./${file.filename}${file.ext}`
+      [file.filename]: getEntry(
+        [hotMiddlewareClient, getLoader("/contents-hmr/client.js")],
+        [path.join(mPaths.contentsFolder, `./${file.filename}${file.ext}`)],
+        dev
       )
     }))
   const contentsEntry = Object.assign({}, ...contentNamesAndPaths) as Record<
@@ -215,7 +215,8 @@ export const getXtensioWebpackConfig = async (
     return {
       [file.filename]: {
         import: getEntry(
-          path.join(mPaths.pagesFolder, `./${file.filename}${file.ext}`),
+          [hotMiddlewareClient],
+          [path.join(mPaths.pagesFolder, `./${file.filename}${file.ext}`)],
           dev
         ),
         filename: "pages/[name].js"
@@ -233,13 +234,22 @@ export const getXtensioWebpackConfig = async (
     devtool: isDev ? "inline-source-map" : undefined,
     watch: isDev ? true : false,
     entry: {
-      ...(isPopup ? { popup: getEntry(mPaths.popup, dev) } : {}),
-      ...(isBackground ? { background: mPaths.background } : {}),
+      ...(isPopup
+        ? { popup: getEntry([hotMiddlewareClient], [mPaths.popup], dev) }
+        : {}),
+      ...(isBackground
+        ? {
+            background: getEntry(
+              [getLoader("/contents-hmr/server.js")],
+              [mPaths.background],
+              dev
+            )
+          }
+        : {}),
       ...contentsEntry,
       ...pagesEntry
     },
     output: {
-      clean: true,
       path: isDev ? mPaths.devOutput : mPaths.prodOutput,
       filename: "[name].js",
       publicPath: isDev && `http://localhost:${dev.port}/`

@@ -49,26 +49,48 @@ const __mObserver = new MutationObserver((mutationsList, observer)=> {
 });
 __mObserver.observe(document.querySelector("html") || document.body, {childList: true, subtree: true });
 
-const __appHost = document.createElement("${appName}");
-const __appRoot = document.createElement("div");
-const __appShadowRoot = document.createElement("div");
-__appShadowRoot.setAttribute("shadow-root", "${appName}");
-__appHost.append(__appShadowRoot);
-document.querySelector("html").append(__appHost);
-__appShadowRoot.attachShadow({ mode: "open" }).append(getLinkTag(), __appRoot);
-const __root = __createRoot(__appRoot);
-__root.render(<${contentConfig.component}/>);
+function __mount(){
+  console.log("xtensio: mounting...");
+  let el;
+  if(el = document.querySelector("${appName}")) el.remove();
+  const __appHost = document.createElement("${appName}");
+  const __appRoot = document.createElement("div");
+  const __appShadowRoot = document.createElement("div");
+  __appShadowRoot.setAttribute("shadow-root", "${appName}");
+  __appHost.append(__appShadowRoot);
+  document.querySelector("html").append(__appHost);
+  __appShadowRoot.attachShadow({ mode: "open" }).append(getLinkTag(), __appRoot);
+  const __root = __createRoot(__appRoot);
+  __root.render(<${contentConfig.component}/>);
+}
+__mount();
+if(module.hot){
+  module.hot.accept(()=> {
+    __mount();
+  })
+}
  `
     else
       return `
  import { createRoot as __createRoot } from "react-dom/client";
  ${source}
- const __appHost = document.createElement("${appName}");
- const __appRoot = document.createElement("div");
- __appHost.append(__appRoot);
- document.querySelector("html").append(__appHost);
- const __root = __createRoot(__appRoot);
- __root.render(<${contentConfig.component}/>);
+ function __mount(){
+  console.log("xtensio: mounting...");
+  let el;
+  if(el = document.querySelector("${appName}")) el.remove();
+   const __appHost = document.createElement("${appName}");
+   const __appRoot = document.createElement("div");
+   __appHost.append(__appRoot);
+   document.querySelector("html").append(__appHost);
+   const __root = __createRoot(__appRoot);
+   __root.render(<${contentConfig.component}/>);
+ }
+ __mount();
+ if(module.hot){
+  module.hot.accept(()=> {
+    __mount();
+  })
+}
      `
   } else return source
 }
