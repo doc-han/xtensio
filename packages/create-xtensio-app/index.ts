@@ -1,16 +1,15 @@
 import { mkdirSync } from "fs"
 import Listr from "listr"
 import path from "path"
-import { install } from "pkg-install"
 import fs from "fs/promises"
 import kebabCase from "lodash.kebabcase"
 import camelCase from "lodash.camelcase"
 import upperFirst from "lodash.upperfirst"
-import { exec } from "child_process"
 import chalk from "chalk"
 import prompts from "prompts"
+import pkgInstall from "./helpers/install"
+import execute from "./helpers/execute"
 
-// TODO remove unwanted filename characters
 export const nameHelper = (str: string) => {
   const kebab = kebabCase(str)
   const camel = camelCase(kebab)
@@ -102,45 +101,29 @@ export default async function createCommand(cwd: string, value?: string) {
   tasks.add({
     title: "Installing dependencies",
     task: async () => {
-      await install(
-        {
+      await pkgInstall({
+        deps: {
           typescript: undefined,
           react: "^18",
           "react-dom": "^18",
           xtensio: undefined
         },
-        {
-          prefer: pkgManager,
-          dev: false,
-          cwd: projectDir
-        }
-      )
-
-      // DEV deps
-      await install(
-        {
+        devDeps: {
           "@types/react": "~18",
           "@types/react-dom": "~18",
           "@types/chrome": undefined
         },
-        {
-          prefer: pkgManager,
-          dev: true,
-          cwd: projectDir
-        }
-      )
+        cwd: projectDir,
+        pkgManager
+      })
     }
   })
 
   tasks.add({
     title: "Initializing git",
-    task: () =>
-      new Promise<void>((resolve, reject) => {
-        exec("git init", { cwd: projectDir }, (error, stdout, stderr) => {
-          if (error) reject(error)
-          resolve()
-        })
-      })
+    task: async () => {
+      await execute("git init", projectDir)
+    }
   })
 
   tasks
