@@ -1,5 +1,5 @@
 import path from "path"
-import { fileExists } from "../helper"
+import { directoryExists, fileExists } from "../helper"
 
 export interface ProjectPaths {
   projectDirectory: string
@@ -32,17 +32,20 @@ function getJsFilePath(absPath: string, required = true) {
 }
 
 export default function getProjectPaths(cwd: string): ProjectPaths {
+  const srcPath = path.join(cwd, "./src")
+  const isSrc = directoryExists(srcPath)
+  const _cwd = isSrc ? srcPath : cwd
   return {
     projectDirectory: cwd,
     devOutput: path.join(cwd, "./.xtensio/dev"),
     prodOutput: path.join(cwd, "./.xtensio/build"),
     tmpDir: path.join(cwd, "./.xtensio/tmp"),
     packageJSON: path.join(cwd, "./package.json"),
-    popup: getJsFilePath(path.join(cwd, `./popup/popup.tsx`), false),
-    background: getJsFilePath(path.join(cwd, `./background/index.ts`), false),
-    manifest: getJsFilePath(path.join(cwd, `./manifest.ts`)),
-    contentsFolder: path.join(cwd, "./contents"),
-    pagesFolder: path.join(cwd, "./pages"),
+    popup: getJsFilePath(path.join(_cwd, `./popup/popup.tsx`), false),
+    background: getJsFilePath(path.join(_cwd, `./background/index.ts`), false),
+    manifest: getJsFilePath(path.join(_cwd, `./manifest.ts`)),
+    contentsFolder: path.join(_cwd, "./contents"),
+    pagesFolder: path.join(_cwd, "./pages"),
     npmLock: path.join(cwd, "./package-lock.json"),
     publicPath: path.join(cwd, "./public")
   }

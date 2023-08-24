@@ -49,6 +49,15 @@ export default async function createCommand(cwd: string, value?: string) {
     ? "yarn"
     : "npm"
 
+  const srcFolder = (
+    await prompts({
+      type: "confirm",
+      message: "Do you want an src folder?",
+      name: "srcFolder",
+      initial: true
+    })
+  ).srcFolder
+
   const isTs = (
     await prompts({
       type: "confirm",
@@ -68,6 +77,15 @@ export default async function createCommand(cwd: string, value?: string) {
     }
   ])
 
+  const srcFiles = [
+    "background",
+    "contents",
+    "pages",
+    "popup",
+    "manifest.ts",
+    "manifest.js"
+  ]
+
   tasks.add({
     title: "Copying project files",
     task: async () => {
@@ -77,16 +95,25 @@ export default async function createCommand(cwd: string, value?: string) {
       )
       const files = await fs.readdir(templatePath)
       const manifestFile = isTs ? "manifest.ts" : "manifest.js"
+      const srcDir = path.join(projectDir, "./src")
       files.forEach(async (file) => {
         let destFile = file
         if (file === "gitignore") destFile = ".gitignore" // TODO to be fixed
         const filePath = path.join(templatePath, file)
-        const destPath = path.join(projectDir, destFile)
+        const destPath =
+          srcFolder && srcFiles.includes(file)
+            ? path.join(srcDir, destFile)
+            : path.join(projectDir, destFile)
         if (file === "package.json" || file === manifestFile) {
           const isManifest = file === manifestFile
-          const fileContent = await fs.readFile(filePath, "utf-8")
+          let fileContent = await fs.readFile(filePath, "utf-8")
+          if (isManifest && srcFolder)
+            fileContent = fileContent.replace(
+              '"./package.json"',
+              '"../package.json"'
+            )
           await fs.writeFile(
-            path.join(projectDir, file),
+            destPath,
             fileContent.replace(
               /{{app-name}}/gi,
               isManifest ? projectName.name : projectName.kebab
