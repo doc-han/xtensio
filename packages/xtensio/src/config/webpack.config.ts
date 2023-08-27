@@ -1,14 +1,11 @@
 import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin"
-import CopyPlugin from "copy-webpack-plugin"
 import dotenv from "dotenv"
 import { readFileSync, rmSync } from "fs"
 import fs from "fs/promises"
 import HtmlWebpackPlugin from "html-webpack-plugin"
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import path from "path"
-import Refresh from "react-refresh/runtime"
 import webpack from "webpack"
-import WebpackExtensionManifestPlugin from "webpack-extension-manifest-plugin"
 import { ContentConfig } from "../../types/lib"
 import {
   directoryExists,
@@ -16,6 +13,7 @@ import {
   getLoader,
   validateMatches
 } from "../helper"
+import ManifestGenPlugin from "../plugins/ManifestGenPlugin"
 import { sanboxExec } from "../sandbox/helper"
 import { ProjectPaths } from "./projectPaths"
 
@@ -74,28 +72,22 @@ export const getXtensioWebpackConfig = async (
   const isPopup = fileExists(mPaths.popup)
   const isBackground = fileExists(mPaths.background)
 
-  const { default: manifestDefault } = await sanboxExec(
-    mPaths.manifest,
-    mPaths.projectDirectory,
-    mPaths.tmpDir,
-    isNpm,
-    { default: "default" }
-  )
-  const manifestObj: chrome.runtime.Manifest = {
-    ...manifestDefault,
-    web_accessible_resources: [
-      // TODO let the matches here match what is coming from contentscripts
-      { resources: ["*"], matches: ["<all_urls>"] }
-    ],
-    permissions: [...(manifestDefault.permissions || []), "scripting"],
-    host_permissions: ["<all_urls>"]
-  }
-
   const contentSecurity = isDev
     ? {
         content_security_policy: {
           extension_pages: `script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' http://localhost:${dev.port}/`
         }
+      }
+    : {}
+
+  const devManifest = isDev
+    ? {
+        web_accessible_resources: [
+          // TODO let the matches here match what is coming from contentscripts
+          { resources: ["*"], matches: ["<all_urls>"] }
+        ],
+        permissions: ["scripting"],
+        host_permissions: ["<all_urls>"]
       }
     : {}
 
@@ -247,12 +239,17 @@ export const getXtensioWebpackConfig = async (
           }
         : {}),
       ...contentsEntry,
-      ...pagesEntry
+      ...pagesEntry,
+      manifest: mPaths.manifest
     },
     output: {
       path: isDev ? mPaths.devOutput : mPaths.prodOutput,
       filename: "[name].js",
-      publicPath: isDev && `http://localhost:${dev.port}/`
+      publicPath: isDev && `http://localhost:${dev.port}/`,
+      library: {
+        name: "xtensioExports",
+        type: "var"
+      }
     },
     module: {
       rules: [
@@ -335,9 +332,23 @@ export const getXtensioWebpackConfig = async (
       }
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".js", ".jsx"]
+      extensions: [".ts", ".tsx", ".js", ".jsx"],
+      alias: {
+        "@public": path.resolve(mPaths.publicPath)
+      }
     },
     plugins: [
+      new ManifestGenPlugin({
+        filename: path.basename(mPaths.manifest),
+        outFilename: path.basename(mPaths.manifest).replace(/\..+/, ".json"),
+        extend: {
+          ...popupManifest,
+          ...backgroudManifest,
+          content_scripts: contentsManifest,
+          ...contentSecurity,
+          ...devManifest
+        }
+      }),
       isDev && new ReactRefreshPlugin(),
       isDev && new webpack.HotModuleReplacementPlugin(),
       new webpack.DefinePlugin({
@@ -345,17 +356,6 @@ export const getXtensioWebpackConfig = async (
         "process.env.ENV": JSON.stringify(webpackMode),
         "process.env.NODE_ENV": JSON.stringify(webpackMode),
         ...envObject
-      }),
-      new WebpackExtensionManifestPlugin({
-        config: {
-          base: {
-            ...manifestObj,
-            ...popupManifest,
-            ...backgroudManifest,
-            content_scripts: contentsManifest,
-            ...contentSecurity
-          }
-        }
       }),
       new HtmlWebpackPlugin({
         chunks: ["popup"],
@@ -370,17 +370,6 @@ export const getXtensioWebpackConfig = async (
       ),
       new MiniCssExtractPlugin({
         filename: `${appName}-styles.css`
-      }),
-      new CopyPlugin({
-        patterns: [
-          {
-            from: mPaths.publicPath,
-            to: path.join(
-              isDev ? mPaths.devOutput : mPaths.prodOutput,
-              "./public"
-            )
-          }
-        ]
       })
     ].filter(Boolean)
   } as webpack.Configuration
