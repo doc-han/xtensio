@@ -51,10 +51,9 @@ function getItemFromObj(obj: any, map: Record<string, string>) {
 }
 
 async function init() {
-  const [a, b, ...rest] = process.argv
-  const resMap = rest[4]
-  const obj = JSON.parse(resMap)
-  const compiled = await compileTSFile(rest[0], rest[1], rest[2], !!rest[3])
+  const [_, __, filePath, projectDir, tmpDir, isNpm, rawObj] = process.argv
+  const obj = JSON.parse(rawObj)
+  const compiled = await compileTSFile(filePath, projectDir, tmpDir, !!isNpm)
   const cImport = await import(compiled)
   const items = getItemFromObj(cImport, obj)
   process.send?.(items)
