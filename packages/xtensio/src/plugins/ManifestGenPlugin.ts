@@ -1,4 +1,4 @@
-import { Compiler } from "webpack"
+import { Compiler, sources } from "webpack"
 
 const PLUGIN_NAME = "Xtensio-Manifest-Generator"
 
@@ -34,12 +34,11 @@ class ManifestGenPlugin {
           ]
         }
         const outSource = JSON.stringify(manifestObj)
-        // @ts-ignore
-        compilation.assets[this.options.outFilename] = {
-          source: () => outSource,
-          size: () => outSource.length
-        }
-        delete compilation.assets[this.options.filename]
+        compilation.deleteAsset(this.options.filename)
+        compilation.emitAsset(
+          this.options.outFilename,
+          new sources.RawSource(outSource)
+        )
       }
       callback()
     })
