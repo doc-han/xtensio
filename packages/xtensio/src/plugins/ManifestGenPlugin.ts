@@ -1,4 +1,5 @@
 import { Compiler, sources } from "webpack"
+import sandboxExec from "../sandbox/helper"
 
 const PLUGIN_NAME = "Xtensio-Manifest-Generator"
 
@@ -17,19 +18,24 @@ class ManifestGenPlugin {
   }
 
   apply(compiler: Compiler) {
-    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
+    compiler.hooks.emit.tapPromise(PLUGIN_NAME, async (compilation) => {
       const asset = compilation.assets[this.options.filename]
       if (asset) {
         const source = asset.source()
         const commonJsSource = `const self={};\n${source}\nmodule.exports = xtensioExports`
-        const sourceExports = eval(commonJsSource) // TODO replace this with an exec
-        if (!sourceExports.default)
+        const { default: manifestExport } = await sandboxExec.source(
+          commonJsSource,
+          {
+            default: "default"
+          }
+        )
+        if (!manifestExport)
           console.error(`[${PLUGIN_NAME}]: Default export not found!`)
         const manifestObj = {
-          ...(sourceExports.default || {}),
+          ...(manifestExport || {}),
           ...this.options.extend,
           permissions: [
-            ...(sourceExports.default.permissions || []),
+            ...(manifestExport.permissions || []),
             ...(this.options.extend.permissions || [])
           ]
         }
@@ -40,7 +46,6 @@ class ManifestGenPlugin {
           new sources.RawSource(outSource)
         )
       }
-      callback()
     })
   }
 }

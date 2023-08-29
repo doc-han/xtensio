@@ -14,8 +14,8 @@ import {
   validateMatches
 } from "../helper"
 import ManifestGenPlugin from "../plugins/ManifestGenPlugin"
-import { sanboxExec } from "../sandbox/helper"
 import { ProjectPaths } from "./projectPaths"
+import sandboxExec from "../sandbox/helper"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -127,7 +127,7 @@ export const getXtensioWebpackConfig = async (
         getConfig,
         name,
         default: isLikelyReact
-      } = await sanboxExec(
+      } = await sandboxExec.ts(
         contentLoc,
         mPaths.projectDirectory,
         mPaths.tmpDir,
