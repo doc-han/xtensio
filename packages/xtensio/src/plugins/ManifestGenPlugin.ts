@@ -18,34 +18,39 @@ class ManifestGenPlugin {
   }
 
   apply(compiler: Compiler) {
-    compiler.hooks.emit.tapPromise(PLUGIN_NAME, async (compilation) => {
-      const asset = compilation.assets[this.options.filename]
-      if (asset) {
-        const source = asset.source()
-        const commonJsSource = `const self={};\n${source}\nmodule.exports = xtensioExports`
-        const { default: manifestExport } = await sandboxExec.source(
-          commonJsSource,
-          {
-            default: "default"
+    compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+      compilation.hooks.processAssets.tapPromise(
+        PLUGIN_NAME,
+        async (assets) => {
+          const asset = assets[this.options.filename]
+          if (asset) {
+            const source = asset.source()
+            const commonJsSource = `const self={};\n${source}\nmodule.exports = xtensioExports`
+            const { default: manifestExport } = await sandboxExec.source(
+              commonJsSource,
+              {
+                default: "default"
+              }
+            )
+            if (!manifestExport)
+              console.error(`[${PLUGIN_NAME}]: Default export not found!`)
+            const manifestObj = {
+              ...(manifestExport || {}),
+              ...this.options.extend,
+              permissions: [
+                ...(manifestExport.permissions || []),
+                ...(this.options.extend.permissions || [])
+              ]
+            }
+            const outSource = JSON.stringify(manifestObj)
+            compilation.deleteAsset(this.options.filename)
+            compilation.emitAsset(
+              this.options.outFilename,
+              new sources.RawSource(outSource)
+            )
           }
-        )
-        if (!manifestExport)
-          console.error(`[${PLUGIN_NAME}]: Default export not found!`)
-        const manifestObj = {
-          ...(manifestExport || {}),
-          ...this.options.extend,
-          permissions: [
-            ...(manifestExport.permissions || []),
-            ...(this.options.extend.permissions || [])
-          ]
         }
-        const outSource = JSON.stringify(manifestObj)
-        compilation.deleteAsset(this.options.filename)
-        compilation.emitAsset(
-          this.options.outFilename,
-          new sources.RawSource(outSource)
-        )
-      }
+      )
     })
   }
 }
