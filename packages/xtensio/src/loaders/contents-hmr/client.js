@@ -19,8 +19,7 @@ if (typeof __webpack_require__ !== "undefined") {
       clearTimeout(timeout)
       const fns = inProgress[url]
       delete inProgress[url]
-      // TODO: the line below makes HMR break.
-      // fns && fns.forEach(fn=> fn(event));
+      fns && fns.forEach((fn) => fn(event))
     }
     var timeout = setTimeout(
       () => onLoadComplete({ type: "timeout", target: { src: url } }),
