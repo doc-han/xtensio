@@ -42,7 +42,7 @@ class ManifestGenPlugin {
                 ...(this.options.extend.permissions || [])
               ]
             }
-            const outSource = JSON.stringify(manifestObj)
+            const outSource = JSON.stringify(manifestObj, null, 2)
             compilation.deleteAsset(this.options.filename)
             compilation.emitAsset(
               this.options.outFilename,
