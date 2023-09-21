@@ -339,7 +339,7 @@ export const getXtensioWebpackConfig = async (
     },
     plugins: [
       new ManifestGenPlugin({
-        filename: path.basename(mPaths.manifest),
+        filename: path.basename(mPaths.manifest).replace(/\..+/, ".js"),
         outFilename: path.basename(mPaths.manifest).replace(/\..+/, ".json"),
         extend: {
           ...popupManifest,
