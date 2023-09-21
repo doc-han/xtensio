@@ -14,7 +14,7 @@ async function compileTSFile(
       isNpm ? "npx" : "yarn"
     } tsc ${filePath} --outDir ${tmpDir} --resolveJsonModule --esModuleInterop --jsx react --allowUmdGlobalAccess --allowJs`
   )
-  const relPath = path.relative(projectDir, filePath)
+  const relPath = path.relative(projectDir, filePath).replace(/^\/?src\//, "") // remove /src if it exists at the beginning
   const extName = path.extname(filePath)
   const possiblePaths = [
     path.join(tmpDir, path.basename(filePath).replace(extName, ".js")),
