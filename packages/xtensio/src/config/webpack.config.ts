@@ -16,6 +16,7 @@ import {
 import ManifestGenPlugin from "../plugins/ManifestGenPlugin"
 import { ProjectPaths } from "./projectPaths"
 import sandboxExec from "../sandbox/helper"
+import ExtensionContentsHMRPlugin from "../loaders/contents-hmr/ExtensionContentsHMRPlugin"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -173,7 +174,7 @@ export const getXtensioWebpackConfig = async (
     .filter((file) => !!file.config.matches?.length)
     .map((file) => ({
       [file.filename]: getEntry(
-        [hotMiddlewareClient, getLoader("/contents-hmr/client.js")],
+        [hotMiddlewareClient],
         [path.join(mPaths.contentsFolder, `./${file.filename}${file.ext}`)],
         dev
       )
@@ -182,6 +183,7 @@ export const getXtensioWebpackConfig = async (
     string,
     string
   >
+  const contentsKeys = Object.keys(contentsEntry).join("|")
 
   const contentsManifest = contentFilesAndExt
     .filter((file) => !!file.config.matches?.length)
@@ -232,7 +234,7 @@ export const getXtensioWebpackConfig = async (
       ...(isBackground
         ? {
             background: getEntry(
-              [getLoader("/contents-hmr/server.js")],
+              [getLoader("/contents-hmr/loadScript.js")],
               [mPaths.background],
               dev
             )
@@ -338,6 +340,8 @@ export const getXtensioWebpackConfig = async (
       }
     },
     plugins: [
+      isDev &&
+        new ExtensionContentsHMRPlugin({ entry: new RegExp(contentsKeys) }),
       new ManifestGenPlugin({
         filename: path.basename(mPaths.manifest).replace(/\..+/, ".js"),
         outFilename: path.basename(mPaths.manifest).replace(/\..+/, ".json"),
