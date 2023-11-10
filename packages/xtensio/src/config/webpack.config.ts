@@ -247,7 +247,7 @@ export const getXtensioWebpackConfig = async (
     output: {
       path: isDev ? mPaths.devOutput : mPaths.prodOutput,
       filename: "[name].js",
-      publicPath: isDev && `http://localhost:${dev.port}/`,
+      publicPath: isDev ? `http://localhost:${dev.port}/` : "/",
       library: {
         name: "xtensioExports",
         type: "var"
