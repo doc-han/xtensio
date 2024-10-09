@@ -65,7 +65,7 @@ export const getXtensioWebpackConfig = async (
   rmSync(mPaths.tmpDir, { force: true, recursive: true })
 
   const isNpm = fileExists(mPaths.npmLock)
-
+  const useTailwind = fileExists(mPaths.tailwindPath)
   const envObject = getEnvObject(mPaths.projectDirectory, isDev)
   const applicationJson = await import(mPaths.packageJSON)
   const appName = (applicationJson.xtensio?.name ||
@@ -110,6 +110,22 @@ export const getXtensioWebpackConfig = async (
       plugins: dev && ["react-refresh/babel"]
     }
   }
+
+  const cssLoaderWithTailwind = [
+    MiniCssExtractPlugin.loader,
+    {
+      loader: "css-loader",
+      options: {
+        importLoaders: 2, // Ensures that postcss-loader and sass-loader are applied
+        sourceMap: isDev // Enable source maps in development
+      }
+    },
+    "postcss-loader",
+    "sass-loader"
+  ]
+
+  const cssLoader = [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+
   const hotMiddlewareClient = `webpack-hot-middleware/client?path=http://localhost:${dev?.port}/__webpack_hmr`
 
   const isContents = directoryExists(mPaths.contentsFolder)
@@ -317,7 +333,7 @@ export const getXtensioWebpackConfig = async (
         },
         {
           test: /\.(css|scss|sass)$/,
-          use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+          use: useTailwind ? cssLoaderWithTailwind : cssLoader
         }
       ]
     },
