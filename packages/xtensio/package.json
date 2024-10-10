@@ -51,6 +51,8 @@
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.7.6",
     "pkg-install": "^1.0.0",
+    "postcss": "^8.4.47",
+    "postcss-loader": "^8.1.1",
     "react": "^18.2.0",
     "react-refresh": "^0.14.0",
     "sass": "^1.63.6",

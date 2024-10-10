@@ -13,11 +13,6 @@ const dom = new JSDOM(
   "<!DOCTYPE html><html><head></head><body></body></html>",
   { url: "http://localhost/" }
 )
-// @ts-ignore
-global.window = dom.window
-global.document = dom.window.document
-global.navigator = dom.window.navigator
-global.MutationObserver = dom.window.MutationObserver
 
 // Add react to the environment
 global.React = React

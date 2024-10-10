@@ -22,6 +22,12 @@ export const nameHelper = (str: string) => {
   }
 }
 
+let excludePaths = ["tailwind.css", "tailwind.config.js", "postcss.config.js"]
+
+const removeFromExcludePath = (valueToRemove: string): void => {
+  excludePaths = excludePaths.filter((path) => path !== valueToRemove)
+}
+
 export default async function createCommand(cwd: string, value?: string) {
   let projectNameInput = value
   if (!projectNameInput)
@@ -67,6 +73,15 @@ export default async function createCommand(cwd: string, value?: string) {
     })
   ).isTs
 
+  const useTailwind = (
+    await prompts({
+      type: "confirm",
+      message: `Do you want to use ${chalk.blue("Tailwind Css")}?`,
+      initial: true,
+      name: "useTailwind"
+    })
+  ).useTailwind
+
   const projectDir = path.join(cwd, projectName.kebab)
   const tasks = new Listr([
     {
@@ -77,7 +92,7 @@ export default async function createCommand(cwd: string, value?: string) {
     }
   ])
 
-  const srcFiles = [
+  let srcFiles = [
     "background",
     "contents",
     "pages",
@@ -96,6 +111,17 @@ export default async function createCommand(cwd: string, value?: string) {
       const files = await fs.readdir(templatePath)
       const manifestFile = isTs ? "manifest.ts" : "manifest.js"
       const srcDir = path.join(projectDir, "./src")
+
+      if (useTailwind) {
+        //remove from excludePaths
+        removeFromExcludePath("tailwind.css")
+        removeFromExcludePath("tailwind.config.js")
+        removeFromExcludePath("postcss.config.js")
+
+        //add to src files
+        srcFiles.push("tailwind.css")
+      }
+
       files.forEach(async (file) => {
         let destFile = file
         if (file === "gitignore") destFile = ".gitignore" // TODO to be fixed
@@ -120,31 +146,56 @@ export default async function createCommand(cwd: string, value?: string) {
             ),
             "utf-8"
           )
-        } else await fs.cp(filePath, destPath, { recursive: true })
+        } else if (!excludePaths.includes(file)) {
+          //if not excluded then create file
+          await fs.cp(filePath, destPath, { recursive: true })
+        }
       })
     }
   })
+
+  let dependencies = {
+    typescript: undefined,
+    react: "^18",
+    "react-dom": "^18",
+    xtensio: undefined
+  }
+
+  let devDependencies: { [key: string]: any } = {
+    "@types/react": "~18",
+    "@types/react-dom": "~18",
+    "@types/chrome": undefined
+  }
+
+  if (useTailwind) {
+    devDependencies = {
+      ...devDependencies,
+      tailwindcss: undefined,
+      autoprefixer: undefined,
+      postcss: undefined
+    }
+  }
 
   tasks.add({
     title: "Installing dependencies",
     task: async () => {
       await pkgInstall({
-        deps: {
-          typescript: undefined,
-          react: "^18",
-          "react-dom": "^18",
-          xtensio: undefined
-        },
-        devDeps: {
-          "@types/react": "~18",
-          "@types/react-dom": "~18",
-          "@types/chrome": undefined
-        },
+        deps: { ...dependencies },
+        devDeps: { ...devDependencies },
         cwd: projectDir,
         pkgManager
       })
     }
   })
+
+  if (useTailwind) {
+    tasks.add({
+      title: "Setup Tailwind",
+      task: async () => {
+        await execute("npx tailwindcss init", projectDir)
+      }
+    })
+  }
 
   tasks.add({
     title: "Initializing git",

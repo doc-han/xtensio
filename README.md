@@ -127,6 +127,26 @@ Inside the background folder is an `index.ts` file which serves as your single e
 
 > You can freely create other files in the background directory and use them or import them into the `index.ts` file.
 
+
+
+###  🦋 Styles - Tailwind Css
+
+To include tailwind class utilities, you basically need to Opt in `[ select 'Y' ]` for Tailwind Css in the setup process
+We will do the all the heavy lifting. All you've to do is to `import tailwind.css` in any section being page,content, popup etc. 
+
+```js
+import { visitPage } from "xtensio";
+import "../tailwind.css";       //add this line
+...
+const buttonClickHandler = () => {
+    visitPage("settings"); 
+}
+
+return <button className={"px-10 py-1 bg-red-200 border ..."} onClick={buttonClickHandler}>Visit Settings Page</button>
+```
+
+
+
 ### 📜 Manifest.ts
 
 This is the main file that handles most of the configurations related to a browser extension. It exports a JavaScript object as default which is used in generating the [manifest.json](https://developer.chrome.com/docs/extensions/mv3/manifest/) which is required when creating a browser extension.
