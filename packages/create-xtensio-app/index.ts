@@ -172,8 +172,7 @@ export default async function createCommand(cwd: string, value?: string) {
       ...devDependencies,
       tailwindcss: undefined,
       autoprefixer: undefined,
-      postcss: undefined,
-      "postcss-loader": undefined
+      postcss: undefined
     }
   }
 
