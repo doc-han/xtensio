@@ -1,6 +1,6 @@
 {
   "name": "create-xtensio-app",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "Create a new extension project pretty quick",
   "main": "./bin/create-xtensio-app",
   "repository": "https://github.com/doc-han/xtensio.git",
