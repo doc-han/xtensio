@@ -8,7 +8,7 @@
   "license": "MIT",
   "bin": "./bin/create-xtensio-app",
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "files": [
     ".build",
@@ -37,5 +37,8 @@
     "@types/lodash.upperfirst": "^4.3.7",
     "@types/prompts": "^2.4.4",
     "prettier": "3.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
