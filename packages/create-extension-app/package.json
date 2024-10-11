@@ -9,7 +9,7 @@
   "scripts": {
     "build-script": "node build-script.js && yarn lint:fix",
     "build": "yarn workspace create-xtensio-app run build && rm -rf ./.build/ && yarn build-script",
-    "clean": "yarn build-script clean",
+    "clean": "node build-script.js clean",
     "push": "yarn build && npm publish && yarn clean",
     "lint": "prettier . --check",
     "lint:fix": "prettier . --write"
