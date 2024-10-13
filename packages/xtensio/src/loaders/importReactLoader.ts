@@ -37,6 +37,7 @@ const getLinkTag = () => {
 const __mObserver = new MutationObserver((mutationsList, observer)=> {
   for (const mutation of mutationsList) {
     if (mutation.type === 'childList') {
+      if(mutation.target?.parentElement?.tagName === "HTML" && !document.querySelector("${appName}")) __mount();
       mutation.addedNodes.forEach((node) => {
         if (/(${appName}-mount)/i.test(node.nodeName)) {
           const shadowEl = node.querySelector("[shadow-root='${appName}-mount']");
