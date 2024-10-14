@@ -6,7 +6,7 @@ import cors from "cors"
 import devMiddleware from "webpack-dev-middleware"
 import hotMiddleware from "webpack-hot-middleware"
 
-const DEV_SERVER_PORT = 3000
+const DEV_SERVER_PORT = 5332 // new port for xtensio
 
 export default function devCommand(cwd: string) {
   return new Promise<void>(async (resolve) => {

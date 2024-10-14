@@ -27,12 +27,19 @@ export async function xtensioCLI<T extends Commands>(
       )
       return
     case "dev":
+      const pkg = require(path.join(cwd, "./package.json"))
+      const startUrls: string[] = (
+        Array.isArray(pkg.xtensio?.startUrls) ? pkg.xtensio?.startUrls : []
+      )
+        .filter((v: unknown) => typeof v === "string")
+        .map((v: string) => `--start-url ${v}`)
+        .join(" ")
       await devCommand(cwd)
       const devPath = path.join(cwd, "./.xtensio/dev")
       execute(
         `${
           isNpm ? "npx" : "yarn"
-        } web-ext run --source-dir ${devPath} --target=chromium --no-reload`
+        } web-ext run --source-dir ${devPath} --target=chromium --no-reload ${startUrls}`
       )
       return
     default:
