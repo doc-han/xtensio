@@ -34,12 +34,17 @@ export async function xtensioCLI<T extends Commands>(
         .filter((v: unknown) => typeof v === "string")
         .map((v: string) => `--start-url ${v}`)
         .join(" ")
+
+      const defaultProfile = path.join(cwd, "./.profile")
+      const profile: string = pkg.xtensio?.profile || defaultProfile
       await devCommand(cwd)
       const devPath = path.join(cwd, "./.xtensio/dev")
       execute(
         `${
           isNpm ? "npx" : "yarn"
-        } web-ext run --source-dir ${devPath} --target=chromium --no-reload ${startUrls}`
+        } web-ext run --source-dir ${devPath} --target=chromium --no-reload ${startUrls} --keep-profile-changes ${
+          profile === defaultProfile ? "--profile-create-if-missing" : ""
+        } --chromium-profile="${profile}"`
       )
       return
     default:
