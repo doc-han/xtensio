@@ -148,7 +148,14 @@ export default async function createCommand(cwd: string, value?: string) {
           )
         } else if (!excludePaths.includes(file)) {
           //if not excluded then create file
-          await fs.cp(filePath, destPath, { recursive: true })
+          if (file === "tailwind.config.js" && !srcFolder) {
+            let fileContent = await fs.readFile(filePath, "utf-8")
+            await fs.writeFile(
+              destPath,
+              fileContent.replace(/\.\/src/gi, "."),
+              "utf-8"
+            )
+          } else await fs.cp(filePath, destPath, { recursive: true })
         }
       })
     }
