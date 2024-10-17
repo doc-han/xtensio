@@ -80,54 +80,6 @@ export const getXtensioWebpackConfig = async (
         }
       }
     : {}
-
-  const devManifest = isDev
-    ? {
-        web_accessible_resources: [
-          // TODO let the matches here match what is coming from contentscripts
-          { resources: ["*"], matches: ["<all_urls>"] }
-        ],
-        permissions: ["scripting"],
-        host_permissions: ["<all_urls>"]
-      }
-    : {}
-
-  const popupManifest = isPopup
-    ? { action: { default_popup: "popup.html" } }
-    : {}
-  const backgroudManifest = isBackground
-    ? { background: { service_worker: "background.js" } }
-    : {}
-
-  const babelLoader = {
-    loader: "babel-loader",
-    options: {
-      presets: [
-        "@babel/preset-env",
-        "@babel/preset-react",
-        "@babel/preset-typescript"
-      ],
-      plugins: dev && ["react-refresh/babel"]
-    }
-  }
-
-  const cssLoaderWithTailwind = [
-    MiniCssExtractPlugin.loader,
-    {
-      loader: "css-loader",
-      options: {
-        importLoaders: 2, // Ensures that postcss-loader and sass-loader are applied
-        sourceMap: isDev // Enable source maps in development
-      }
-    },
-    "postcss-loader",
-    "sass-loader"
-  ]
-
-  const cssLoader = [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
-
-  const hotMiddlewareClient = `webpack-hot-middleware/client?path=http://localhost:${dev?.port}/__webpack_hmr`
-
   const isContents = directoryExists(mPaths.contentsFolder)
 
   const contentFiles = isContents
@@ -180,6 +132,66 @@ export const getXtensioWebpackConfig = async (
       }
     })
   )
+
+  const contentsMatches = contentFilesAndExt
+    .filter((file) => !!file.config.matches?.length)
+    .flatMap((file) => file.config.matches?.map((item) => item))
+
+  const devManifest = isDev
+    ? {
+        web_accessible_resources: [
+          { resources: ["*"], matches: ["<all_urls>"] }
+        ],
+        permissions: ["scripting"],
+        host_permissions: ["<all_urls>"]
+      }
+    : {
+        //production:
+        //since all css files are merged into 1 big ass file, we will always add it
+        // fetch the matches from contents scripts
+        web_accessible_resources: [
+          {
+            resources: [`${appName}-styles.css`],
+            matches: contentsMatches
+          }
+        ]
+      }
+
+  const popupManifest = isPopup
+    ? { action: { default_popup: "popup.html" } }
+    : {}
+  const backgroudManifest = isBackground
+    ? { background: { service_worker: "background.js" } }
+    : {}
+
+  const babelLoader = {
+    loader: "babel-loader",
+    options: {
+      presets: [
+        "@babel/preset-env",
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+      ],
+      plugins: dev && ["react-refresh/babel"]
+    }
+  }
+
+  const cssLoaderWithTailwind = [
+    MiniCssExtractPlugin.loader,
+    {
+      loader: "css-loader",
+      options: {
+        importLoaders: 2, // Ensures that postcss-loader and sass-loader are applied
+        sourceMap: isDev // Enable source maps in development
+      }
+    },
+    "postcss-loader",
+    "sass-loader"
+  ]
+
+  const cssLoader = [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+
+  const hotMiddlewareClient = `webpack-hot-middleware/client?path=http://localhost:${dev?.port}/__webpack_hmr`
 
   const configMap = new Map<string, ContentConfig>()
   contentFilesAndExt.forEach((op) => {
@@ -242,7 +254,7 @@ export const getXtensioWebpackConfig = async (
   return {
     mode: webpackMode,
     devtool: isDev ? "inline-source-map" : undefined,
-    watch: isDev ? true : false,
+    watch: isDev,
     entry: {
       ...(isPopup
         ? { popup: getEntry([hotMiddlewareClient], [mPaths.popup], dev) }
