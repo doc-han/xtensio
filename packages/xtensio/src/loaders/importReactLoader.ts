@@ -34,6 +34,14 @@ const getLinkTag = () => {
   return __linkTag;
 }
 
+const __mObserver = new MutationObserver((mutationsList, observer)=> {
+  for (const mutation of mutationsList) {
+    if (mutation.type === 'childList' && Array.from(mutation.removedNodes).some(node=> node.tagName === "HTML") && !document.querySelector("${appName}"))
+      __mount()
+  }
+});
+__mObserver.observe(document.documentElement.parentNode, {childList: true });
+
 function __mount(){
   console.log("xtensio: mounting...");
   let el;
