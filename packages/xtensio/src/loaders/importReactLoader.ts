@@ -36,19 +36,11 @@ const getLinkTag = () => {
 
 const __mObserver = new MutationObserver((mutationsList, observer)=> {
   for (const mutation of mutationsList) {
-    if (mutation.type === 'childList') {
-      if(mutation.target?.parentElement?.tagName === "HTML" && !document.querySelector("${appName}")) __mount();
-      mutation.addedNodes.forEach((node) => {
-        if (/(${appName}-mount)/i.test(node.nodeName)) {
-          const shadowEl = node.querySelector("[shadow-root='${appName}-mount']");
-          if(!shadowEl) return;
-          shadowEl.shadowRoot.prepend(getLinkTag());
-        }
-      });
-    }
+    if (mutation.type === 'childList' && Array.from(mutation.removedNodes).some(node=> node.tagName === "HTML") && !document.querySelector("${appName}"))
+      __mount()
   }
 });
-__mObserver.observe(document.querySelector("html") || document.body, {childList: true, subtree: true });
+__mObserver.observe(document.documentElement.parentNode, {childList: true });
 
 function __mount(){
   console.log("xtensio: mounting...");
