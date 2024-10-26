@@ -15,6 +15,7 @@ export interface ProjectPaths {
   npmLock: string
   publicPath: string
   tailwindPath: string
+  tailwindCssPath: string
 }
 
 function getJsFilePath(absPath: string, required = true) {
@@ -49,6 +50,7 @@ export default function getProjectPaths(cwd: string): ProjectPaths {
     pagesFolder: path.join(_cwd, "./pages"),
     npmLock: path.join(cwd, "./package-lock.json"),
     publicPath: path.join(cwd, "./public"),
-    tailwindPath: path.join(cwd, "./tailwind.config.js")
+    tailwindPath: path.join(cwd, "./tailwind.config.js"),
+    tailwindCssPath: path.join(_cwd, "./tailwind.css")
   }
 }

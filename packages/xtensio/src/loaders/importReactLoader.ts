@@ -1,6 +1,7 @@
 import path from "path"
 import { LoaderContext } from "webpack"
 import { ContentConfig } from "../../types/lib"
+import { __getLinkTag } from "./functions"
 
 interface Options {
   configMap: Map<string, ContentConfig>
@@ -25,15 +26,7 @@ export default function importReactLoader(
       return `
 import { createRoot as __createRoot } from "react-dom/client";
 ${source}
-// Extension styles here!
-const getLinkTag = () => {
-  const __styleLink = chrome.runtime.getURL("${appName}-styles.css");
-  const __linkTag = document.createElement("link");
-  __linkTag.rel = "stylesheet";
-  __linkTag.href = __styleLink;
-  return __linkTag;
-}
-
+${__getLinkTag.toString()}
 const __mObserver = new MutationObserver((mutationsList, observer)=> {
   for (const mutation of mutationsList) {
     if (mutation.type === 'childList' && Array.from(mutation.removedNodes).some(node=> node.tagName === "HTML") && !document.querySelector("${appName}"))
@@ -52,7 +45,7 @@ function __mount(){
   __appShadowRoot.setAttribute("shadow-root", "${appName}");
   __appHost.append(__appShadowRoot);
   document.querySelector("html").append(__appHost);
-  __appShadowRoot.attachShadow({ mode: "open" }).append(getLinkTag(), __appRoot);
+  __appShadowRoot.attachShadow({ mode: "open" }).append(__getLinkTag("${appName}"), __appRoot);
   const __root = __createRoot(__appRoot);
   __root.render(<${contentConfig.component}/>);
 }
