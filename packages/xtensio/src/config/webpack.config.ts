@@ -17,6 +17,7 @@ import ManifestGenPlugin from "../plugins/ManifestGenPlugin"
 import { ProjectPaths } from "./projectPaths"
 import sandboxExec from "../sandbox/helper"
 import ExtensionContentsHMRPlugin from "../loaders/contents-hmr/ExtensionContentsHMRPlugin"
+import IgnoreEntriesPlugin from "../plugins/IgnoreEntriesPlugin"
 
 // TODO add a loader for the background page.
 // on install or refresh, check all open tabs using contentConfig and inject corresponding content
@@ -270,7 +271,8 @@ export const getXtensioWebpackConfig = async (
         : {}),
       ...contentsEntry,
       ...pagesEntry,
-      manifest: mPaths.manifest
+      manifest: mPaths.manifest,
+      globalcss: useTailwind ? mPaths.tailwindCssPath : []
     },
     output: {
       path: isDev ? mPaths.devOutput : mPaths.prodOutput,
@@ -381,6 +383,7 @@ export const getXtensioWebpackConfig = async (
           ...devManifest
         }
       }),
+      new IgnoreEntriesPlugin({ ignoreEntries: ["globalcss"] }),
       isDev && new ReactRefreshPlugin(),
       isDev && new webpack.HotModuleReplacementPlugin(),
       new webpack.DefinePlugin({

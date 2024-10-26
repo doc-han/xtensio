@@ -1,5 +1,6 @@
 import { LoaderContext } from "webpack"
 import { findDefaultExportName } from "../helper"
+import { __getLinkTag } from "./functions"
 
 interface Options {
   appName: string
@@ -15,6 +16,7 @@ export default function injectReactLoader(
   return `
 import { createRoot as __createRoot } from "react-dom/client";
 ${source}
+${__getLinkTag.toString()}
 function __mount(){
   console.log("xtensio: mounting...");
   let el;
@@ -23,6 +25,7 @@ function __mount(){
   const __appRoot = document.createElement("div");
   __appHost.append(__appRoot);
   document.body.append(__appHost);
+  document.head.append(__getLinkTag("${appName}"));
   const __root = __createRoot(__appRoot);
   __root.render(<${defaultName}/>)
 }

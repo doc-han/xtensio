@@ -43,12 +43,17 @@ class ManifestGenPlugin {
               ]
             }
             const outSource = JSON.stringify(manifestObj, null, 2)
-            compilation.deleteAsset(this.options.filename)
             compilation.emitAsset(
               this.options.outFilename,
               new sources.RawSource(outSource)
             )
           }
+          Object.keys(assets).forEach((key) => {
+            const name = key.split(".")?.[0]
+            if (name === "manifest" && key !== this.options.outFilename) {
+              compilation.deleteAsset(key)
+            }
+          })
         }
       )
     })
