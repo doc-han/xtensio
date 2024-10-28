@@ -170,7 +170,7 @@ export const getXtensioWebpackConfig = async (
     options: {
       presets: [
         "@babel/preset-env",
-        "@babel/preset-react",
+        ["@babel/preset-react", { development: isDev, runtime: "automatic" }],
         "@babel/preset-typescript"
       ],
       plugins: dev && ["react-refresh/babel"]
@@ -272,7 +272,7 @@ export const getXtensioWebpackConfig = async (
       ...contentsEntry,
       ...pagesEntry,
       manifest: mPaths.manifest,
-      globalcss: useTailwind ? mPaths.tailwindCssPath : []
+      ...(useTailwind ? { globalcss: mPaths.tailwindCssPath } : {})
     },
     output: {
       path: isDev ? mPaths.devOutput : mPaths.prodOutput,
