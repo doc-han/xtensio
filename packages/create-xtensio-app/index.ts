@@ -40,7 +40,7 @@ export default async function createCommand(cwd: string, value?: string) {
       })
     ).projectName
 
-  if (!projectNameInput) throw Error("Project name not specified")
+  if (!projectNameInput) throw new Error("Project name not specified")
   const projectName = nameHelper(projectNameInput)
 
   const pkgManager = (
@@ -185,8 +185,8 @@ export default async function createCommand(cwd: string, value?: string) {
 
   tasks.add({
     title: "Installing dependencies",
-    task: async () => {
-      await pkgInstall({
+    task: () => {
+      return pkgInstall({
         deps: { ...dependencies },
         devDeps: { ...devDependencies },
         cwd: projectDir,
@@ -206,14 +206,13 @@ export default async function createCommand(cwd: string, value?: string) {
 
   tasks.add({
     title: "Initializing git",
-    task: async () => {
-      await execute("git init", projectDir)
+    task: () => {
+      return execute("git init", projectDir)
     }
   })
 
   tasks
     .run()
-    .catch(console.error)
     .then(() => {
       console.log(`
 Successfully generated! 🔥🔥🔥
@@ -229,5 +228,14 @@ ${chalk.blue.bold("You can begin by:")}
     ${pkgManager === "yarn" ? "yarn dev" : "npm run dev"}
 `)
       process.exit()
+    })
+    .catch((err) => {
+      console.error(err)
+      console.log(
+        `${chalk.red("There was an error creating your project")} ${
+          projectName.kebab
+        }`
+      )
+      process.exit(1)
     })
 }
