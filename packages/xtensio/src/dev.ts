@@ -26,7 +26,12 @@ export default function devCommand(cwd: string) {
     })
     app.use(
       devMiddleware(compiler, {
-        writeToDisk: true
+        writeToDisk: (filePath) => {
+          return (
+            !/hot-update\.json$/.test(filePath) &&
+            !/hot-update\.js$/.test(filePath)
+          )
+        }
       })
     )
 
