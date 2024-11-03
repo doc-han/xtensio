@@ -1,6 +1,27 @@
 <h1 align="center">
         <img style="margin: 50px 0px" width="400px" src="https://raw.githubusercontent.com/doc-han/xtensio/master/statics/xtensio.png" />
 </h1>
+<p align="center">
+  <b>Open-source javascript framework for browser extension development</b> <br />
+  <b>No complex config • No experience with extensions required.</b> <br />
+</p>
+
+<h4 align="center">
+  <a href="https://github.com/doc-han/xtensio?tab=MIT-1-ov-file#readme">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/doc-han/xtensio?color=blue">
+  </a>
+  <a href="https://github.com/doc-han/xtensio">
+    <img src="https://img.shields.io/badge/PR's-Welcome-brightgreen" alt="PRs welcome!" />
+  </a>
+  <a href="https://x.com/xtensiojs">
+    <img src="https://img.shields.io/twitter/follow/xtensiojs?style=social"/>
+  </a>
+
+</h4>
+
+check docs at [xtensio.io](https://xtensio.io/getting-started/)
+
+### What is xtensio?
 
 A javascript framework for building browser extensions. It takes away all the tedious configurations away from you and lowers the barrier to extension development.
 
@@ -127,25 +148,21 @@ Inside the background folder is an `index.ts` file which serves as your single e
 
 > You can freely create other files in the background directory and use them or import them into the `index.ts` file.
 
-
-
-###  🦋 Styles - Tailwind Css
+### 🦋 Styles - Tailwind Css
 
 To include tailwind class utilities, you basically need to Opt in `[ select 'Y' ]` for Tailwind Css in the setup process
-We will do the all the heavy lifting. All you've to do is to `import tailwind.css` in any section being page,content, popup etc. 
+We will do the all the heavy lifting. All you've to do is to `import tailwind.css` in any section being page,content, popup etc.
 
 ```js
 import { visitPage } from "xtensio";
 import "../tailwind.css";       //add this line
 ...
 const buttonClickHandler = () => {
-    visitPage("settings"); 
+    visitPage("settings");
 }
 
 return <button className={"px-10 py-1 bg-red-200 border ..."} onClick={buttonClickHandler}>Visit Settings Page</button>
 ```
-
-
 
 ### 📜 Manifest.ts
 
