@@ -1,0 +1,73 @@
+site_name: xtensio
+site_url: https://xtensio.io
+repo_url: https://github.com/doc-han/xtensio
+repo_name: doc-han/xtensio
+site_author: Farhan Yahaya
+theme:
+  name: material
+  logo: assets/logo.png
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  favicon: assets/logo-black.png
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.footer
+    - navigation.sections
+    - content.code.annotate
+    - content.code.copy
+    - navigation.indexes
+  custom_dir: docs/overrides
+extra_css:
+  - stylesheets/extra.css
+# plugins:
+#   - git-committers:
+#       api_version: v3
+#       repository: doc-han/xtensio
+#       branch: main
+markdown_extensions:
+  - attr_list
+  - tables
+  - md_in_html
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+nav:
+  - Home: index.md
+  - Getting Started:
+    - What is xtensio?: getting-started.md
+    - Installation: installation.md
+    - Project Structure: project-structure.md
+    - Building Your Extension:
+      - Creating an Extension Popup: guide/creating-an-extension-popup.md
+      - Manipulating a website ❤️: guide/manipulating-a-website.md
+      - Creating extension pages: guide/creating-extension-pages.md
+      - Managing Background Processes: guide/managing-background-processes.md
+      - The Manifest file: guide/the-extension-manifest.md
+      - Styling:
+        - CSS: guide/styling-extension-with-css.md
+        - Tailwind CSS: guide/styling-extension-with-tailwind.md
+    - Others:
+      - Environment variables: guide/environment-variables.md
+      - Changing Extension Icons: guide/changing-extension-icon.md
+  # - Tutorials:
+  #   - tutorials/index.md
+  #   - Building a simple: smth.md

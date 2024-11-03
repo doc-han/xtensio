@@ -9,7 +9,8 @@
     "build": "yarn workspaces run build",
     "push": "yarn workspaces run push",
     "lint": "yarn workspaces run lint",
-    "lint:fix": "yarn workspaces run lint:fix"
+    "lint:fix": "yarn workspaces run lint:fix",
+    "docs:serve": "yarn workspace xtensio-docs run serve"
   },
   "workspaces": [
     "packages/*"
