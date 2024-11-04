@@ -10,6 +10,12 @@
   <a href="https://github.com/doc-han/xtensio?tab=MIT-1-ov-file#readme">
     <img alt="GitHub License" src="https://img.shields.io/github/license/doc-han/xtensio?color=blue">
   </a>
+  <a href="https://www.npmjs.com/package/xtensio">
+    <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/xtensio">
+  </a>
+    <a href="https://www.npmjs.com/package/xtensio">
+    <img alt="NPM Version" src="https://img.shields.io/npm/v/xtensio">
+  </a>
   <a href="https://github.com/doc-han/xtensio">
     <img src="https://img.shields.io/badge/PR's-Welcome-brightgreen" alt="PRs welcome!" />
   </a>
@@ -19,7 +25,11 @@
 
 </h4>
 
-check docs at [xtensio.io](https://xtensio.io/getting-started/)
+<p align="center">
+  <u>
+  <a href="https://xtensio.io/getting-started/">Documentation at xtensio.io</a>
+  </u>
+</p>
 
 ### What is xtensio?
 
