@@ -8,6 +8,7 @@
     "serve": "docker run  --rm -it -p 8000:8000 --env-file ./.env -v ${PWD}:/docs xtensio-mkdocs-material",
     "build": "docker run  --rm -it --env-file ./.env -v ${PWD}:/docs xtensio-mkdocs-material build",
     "lint": "echo done linting",
-    "lint:fix": "echo done lint:fixing"
+    "lint:fix": "echo done lint:fixing",
+    "push": "echo done pushing"
   }
 }
