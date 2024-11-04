@@ -1,6 +1,6 @@
 {
   "name": "create-extension-app",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "main": "index.js",
   "license": "MIT",
   "bin": {
