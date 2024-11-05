@@ -17,7 +17,7 @@
     <img alt="NPM Version" src="https://img.shields.io/npm/v/xtensio">
   </a>
   <a href="https://github.com/doc-han/xtensio">
-    <img src="https://img.shields.io/badge/PR's-Welcome-brightgreen" alt="PRs welcome!" />
+    <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen" alt="PRs welcome!" />
   </a>
   <a href="https://x.com/xtensiojs">
     <img src="https://img.shields.io/twitter/follow/xtensiojs?style=social"/>
@@ -31,151 +31,52 @@
   </u>
 </p>
 
-### What is xtensio?
+## Description
 
-A javascript framework for building browser extensions. It takes away all the tedious configurations away from you and lowers the barrier to extension development.
+Xtensio is a framework designed to simplify the creation of stylish, high-quality browser extensions. Built on [React.js](https://react.dev), it enables developers to build sophisticated UIs for browser extensions without the hassle of complex configurations, making extension development more accessible and streamlined.
 
-### 🤷🏽‍♂️ How does it work?
+## Philosophy
 
-**xtensio** provides you with a folder structure that comes with configurations already baked in. Hence, no configuration is needed to get started with your new extension project. Currently, it mainly supports React for development.
+<p>JavaScript is foundational to browser extension development, enabling developers to add custom functionality and enhance user experiences directly within browsers. However, the current process of developing extensions can be cumbersome. Setting up a new extension project often requires tedious configurations, managing different APIs, and adapting code for various browsers—all of which can be time-consuming and error-prone.</p>
+<p>Xtensio aims to streamline browser extension development by providing a powerful framework built on React. It simplifies the process of building complex, elegant UIs in extensions by removing tedious configuration requirements, making it easier for developers to create polished, high-quality extensions with minimal setup.</p>
 
-### 🚀 Creating a new Extension Project
+## Getting started
 
-To create a new extension project using xtensio, you can use the `create` command below which will then ask for your project name.
+visit [xtensio.io](https://xtensio.io/getting-started) to get started.
 
-```bash
-# npm
-npx create-xtensio-app
+**Quick Overview**
 
-# yarn
-yarn create xtensio-app
-```
+- [Installation](https://xtensio.io/installation/)
+- [Project Structure](https://xtensio.io/project-structure/)
+- [Creating an Extension Popup](https://xtensio.io/guide/creating-an-extension-popup/)
+- [Manipulating a website ❤️](https://xtensio.io/guide/manipulating-a-website/)
+- [Creating Extension pages](https://xtensio.io/guide/creating-extension-pages/)
+- [Styling](https://xtensio.io/guide/styling-extension-with-css/)
 
-OR
+## Issues
 
-```bash
-# npm
-npx create-extension-app
+Feel free to [open an Issue](https://github.com/doc-han/xtensio/issues/new) at anytime. It could be any of the below
 
-# yarn
-yarn create extension-app
-```
+1. Feature Request
+2. Reporting a bug
 
-### 🗂️ Folder Structure
+## Built with xtensio
 
-Below is what the project structure with xtensio looks like and we'll be focusing on the folders.
+<table style="text-align:center;">
+<tr>
+<td><a href="https://chromewebstore.google.com/detail/smart-fiverr-improve-your/aekhkmkjmigbecagogodpaepchpjjcnh" target="_blank">
+<img src="https://raw.githubusercontent.com/doc-han/xtensio/master/statics/smartfiverr.svg" width="180" valign="middle" />
+<div><b>Smart Fiverr</b></div>
+</a></td>
+<td><a href="https://leonidasgpt.ssaapps.com/" target="_blank">
+<img src="https://raw.githubusercontent.com/doc-han/xtensio/master/statics/leonidasgpt.png" width="180" valign="middle" />
+<div><b>LeonidasGPT</b></div>
+</a></td>
+<td>
+<div><b>+ yours here soon</b></div></td>
+</tr>
+</table>
 
-<pre>
-.
-├── 📂 <a href="#-popup" style="color: inherit;text-decoration: underline">popup</a>
-│   └── popup.tsx
-├── 📂 <a href="#-contents" style="color: inherit;text-decoration: underline">contents</a>
-│   ├── content_one.tsx
-│   └── content_two.tsx
-├── 📂 <a href="#-pages" style="color: inherit;text-decoration: underline">pages</a>
-│   └── options.tsx
-├── 📂 <a href="#-background" style="color: inherit;text-decoration: underline">background</a>
-│   └── index.ts
-├── manifest.ts
-├── index.d.ts
-└── tsconfig.json
-</pre>
+## License
 
-### 📂 Popup
-
-Inside the popup folder is a file `popup.tsx` which exports a React component. This is the single entry point for your extension popup. The extension popup is the view that is rendered when you click on an extension icon. Just like seen in the image below.
-
-<div align="center">
-    <img style="width: 80%" src="https://raw.githubusercontent.com/doc-han/xtensio/master/statics/extension-popup-image.png" />
-</div>
-
-> In case your extension requires no popup then you can just delete or get rid of this file located at `/popup/popup.tsx`
-
-### 📂 Contents
-
-**The heart of extension development ❤️**
-
-The primary goal of a browser extension is to change the user experience in the browser. This could mean changing the looks or adding some weird functionalities to websites rendered in the browser. All that great magic is handled in this contents directory.
-
-Here is an example of a contentscript that renders a simple box modal at the right bottom corner whenever a user is on the google.com website.
-
-```typescript
-// filename: /contents/googleGPT.tsx
-import React from "react";
-import styles from "./googleGPT.modules.css";
-
-// export a function called getConfig - This is required
-// matches is an array of URL's where the code in this file should execute - required
-export function getConfig() {
-  return {
-    matches: ["*://*.google.com"],
-  };
-}
-
-// This code will be logged whenever the user is
-// on the websites specified in matches above
-console.log("I'm on the google page!");
-
-const BoxModal: React.FC = () => {
-  return (
-    <div className={styles.boxModal}>
-      <button>Search with GPT</button>
-    </div>
-  );
-};
-
-// If your default export is a React component we'll mount it on
-// the websites specified in matches above
-export default BoxModal;
-```
-
-As you can see above, you're required to export a function `getConfig` which specifies where the content file should be executed. Then, any code written in the file will be executed once the user is on the websites specified in `getConfig`.
-
-Also, if your **default export** is a React component, then it'll be nicely mounted into the website for you.
-
-> **NOTE:** you can give any name to the files you create in this directory. They just need to export the getConfig function specifying the websites.
-
-### 📂 Pages
-
-Any file created in here is turned into an extension page. An extension page is a webpage that is hosted locally by your extension. This can be used to build stuff like the options or settings page for your extension.
-These pages can be reached by using the utility function `visitPage` that comes with the xtensio package.
-
-**Example**: If you create a file called `settings.tsx` in the pages directory that exports a react component, an extension page will be generated from that and you can navigate to that page using the code below.
-
-```js
-import { visitPage } from "xtensio";
-...
-const buttonClickHandler = () => {
-    visitPage("settings"); // navigates to the settings.tsx page
-}
-
-return <button onClick={buttonClickHandler}>Visit Settings Page</button>
-```
-
-### 📂 Background
-
-Inside the background folder is an `index.ts` file which serves as your single entry point for your extension's service worker or background script.
-
-> You can freely create other files in the background directory and use them or import them into the `index.ts` file.
-
-### 🦋 Styles - Tailwind Css
-
-To include tailwind class utilities, you basically need to Opt in `[ select 'Y' ]` for Tailwind Css in the setup process
-We will do the all the heavy lifting. All you've to do is to `import tailwind.css` in any section being page,content, popup etc.
-
-```js
-import { visitPage } from "xtensio";
-import "../tailwind.css";       //add this line
-...
-const buttonClickHandler = () => {
-    visitPage("settings");
-}
-
-return <button className={"px-10 py-1 bg-red-200 border ..."} onClick={buttonClickHandler}>Visit Settings Page</button>
-```
-
-### 📜 Manifest.ts
-
-This is the main file that handles most of the configurations related to a browser extension. It exports a JavaScript object as default which is used in generating the [manifest.json](https://developer.chrome.com/docs/extensions/mv3/manifest/) which is required when creating a browser extension.
-
-Even though this configuration can be extended, some parts of it may be overwritten by xtensio. Mainly the `content_scripts` `background` `action`.
+Xtensio is [MIT licensed](LICENSE).
