@@ -27,7 +27,7 @@
 
 <p align="center">
   <u>
-  <a href="https://xtensio.io/getting-started/">Documentation at xtensio.io</a>
+  <a href="https://doc-han.github.io/xtensio/getting-started/">Documentation at xtensio.io</a>
   </u>
 </p>
 
@@ -42,16 +42,16 @@ Xtensio is a framework designed to simplify the creation of stylish, high-qualit
 
 ## Getting started
 
-visit [xtensio.io](https://xtensio.io/getting-started) to get started.
+visit [xtensio.io](https://doc-han.github.io/xtensio/getting-started) to get started.
 
 **Quick Overview**
 
-- [Installation](https://xtensio.io/installation/)
-- [Project Structure](https://xtensio.io/project-structure/)
-- [Creating an Extension Popup](https://xtensio.io/guide/creating-an-extension-popup/)
-- [Manipulating a website ❤️](https://xtensio.io/guide/manipulating-a-website/)
-- [Creating Extension pages](https://xtensio.io/guide/creating-extension-pages/)
-- [Styling](https://xtensio.io/guide/styling-extension-with-css/)
+- [Installation](https://doc-han.github.io/xtensio/installation/)
+- [Project Structure](https://doc-han.github.io/xtensio/project-structure/)
+- [Creating an Extension Popup](https://doc-han.github.io/xtensio/guide/creating-an-extension-popup/)
+- [Manipulating a website ❤️](https://doc-han.github.io/xtensio/guide/manipulating-a-website/)
+- [Creating Extension pages](https://doc-han.github.io/xtensio/guide/creating-extension-pages/)
+- [Styling](https://doc-han.github.io/xtensio/guide/styling-extension-with-css/)
 
 ## Issues
 
