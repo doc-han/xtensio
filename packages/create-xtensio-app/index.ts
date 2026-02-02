@@ -1,5 +1,5 @@
 import { mkdirSync } from "fs"
-import Listr from "listr"
+import { Listr } from "listr2"
 import path from "path"
 import fs from "fs/promises"
 import kebabCase from "lodash.kebabcase"
