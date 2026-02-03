@@ -162,7 +162,12 @@ export const getXtensioWebpackConfig = async (
     ? { action: { default_popup: "popup.html" } }
     : {}
   const backgroudManifest = isBackground
-    ? { background: { service_worker: "background.js" } }
+    ? {
+        background: {
+          service_worker: "background.js",
+          scripts: ["background.js"]
+        }
+      }
     : {}
 
   const babelLoader = {
@@ -355,7 +360,7 @@ export const getXtensioWebpackConfig = async (
       splitChunks: {
         cacheGroups: {
           styles: {
-            name: "styles",
+            name: `${appName}-styles.css`,
             type: "css/mini-extract",
             chunks: "all",
             enforce: true
