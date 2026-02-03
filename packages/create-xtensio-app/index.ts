@@ -1,5 +1,5 @@
 import { mkdirSync } from "fs"
-import Listr from "listr"
+import { Listr } from "listr2"
 import path from "path"
 import fs from "fs/promises"
 import kebabCase from "lodash.kebabcase"
@@ -115,8 +115,8 @@ export default async function createCommand(cwd: string, value?: string) {
       if (useTailwind) {
         //remove from excludePaths
         removeFromExcludePath("tailwind.css")
-        removeFromExcludePath("tailwind.config.js")
         removeFromExcludePath("postcss.config.js")
+        removeFromExcludePath("tailwind.config.js")
 
         //add to src files
         srcFiles.push("tailwind.css")
@@ -178,8 +178,8 @@ export default async function createCommand(cwd: string, value?: string) {
     devDependencies = {
       ...devDependencies,
       tailwindcss: undefined,
-      autoprefixer: undefined,
-      postcss: undefined
+      postcss: undefined,
+      "@tailwindcss/postcss": undefined
     }
   }
 
@@ -194,15 +194,6 @@ export default async function createCommand(cwd: string, value?: string) {
       })
     }
   })
-
-  if (useTailwind) {
-    tasks.add({
-      title: "Setup Tailwind",
-      task: async () => {
-        await execute("npx tailwindcss init", projectDir)
-      }
-    })
-  }
 
   tasks.add({
     title: "Initializing git",
